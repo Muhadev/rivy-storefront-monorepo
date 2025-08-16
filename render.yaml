@@ -1,0 +1,40 @@
+# Render.com configuration file
+# This file helps Render understand your deployment setup
+
+# Build settings
+build:
+  # Use Docker
+  dockerfilePath: ./apps/backend/Dockerfile
+  dockerContext: ./apps/backend
+  
+# Service settings
+services:
+  - type: web
+    name: rivy-storefront-backend
+    env: docker
+    region: oregon
+    plan: starter
+    branch: main
+    rootDir: ./apps/backend
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    
+    # Environment variables
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 4000
+      # Add other env vars through Render dashboard for security
+    
+    # Health check
+    healthCheckPath: /api/v1/health
+    
+    # Auto-deploy settings
+    autoDeploy: true
+    
+    # Resource allocation
+    disk:
+      name: data
+      mountPath: /data
+      sizeGB: 1
