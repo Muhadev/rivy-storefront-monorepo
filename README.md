@@ -1,7 +1,7 @@
-# Rivy Storefront — Monorepo Boilerplate
+# Rivy Storefront — Monorepo
 
 Monorepo for a minimal storefront: **React + TypeScript** frontend and **Node.js + Express + Sequelize + Postgres** backend.
-Designed for senior-level assessment workflows with a **dev-first branch policy**, **conventional commits**, **Docker Compose**, and **CI**.
+Designed for an  assessment workflows with a **dev-first branch policy**, **conventional commits**, **Docker Compose**, and **CI**.
 
 
 ## Quick Start
@@ -44,9 +44,9 @@ docker compose up --build
 - Root `docker-compose.yml`: runs backend, frontend, db
 - Backend-only: `apps/backend/docker-compose.yml` (backend, db, nginx)
 
-## Workflows (Senior-level)
+## Workflows
 
-## Workflows (Senior-level)
+## Workflows
 
 - Default branch: `main`. Daily work targets `dev`. Create PRs from `dev` → `main` **only after a feature is fully completed**.
 - Commit style: Conventional Commits (`feat:`, `fix:`, `chore:`, `refactor:`...).
