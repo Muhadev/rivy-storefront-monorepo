@@ -10,6 +10,7 @@
     "dev:backend": "npm --workspace apps/backend run dev",
     "dev:frontend": "npm --workspace apps/frontend run dev",
     "build": "npm -w apps/backend run build && npm -w apps/frontend run build",
+    "build:backend": "npm -w apps/backend run build",
     "test": "npm -w apps/backend test && npm -w apps/frontend test"
   },
   "devDependencies": {
