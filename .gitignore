@@ -1,0 +1,18 @@
+# Node
+node_modules
+dist
+build
+.env
+.env.*
+.vscode
+.DS_Store
+coverage
+pnpm-lock.yaml
+yarn.lock
+*.log
+.idea
+.next
+.vercel
+.cache
+# Python (just in case)
+__pycache__/
