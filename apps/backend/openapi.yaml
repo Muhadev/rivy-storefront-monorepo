@@ -1,0 +1,106 @@
+openapi: 3.0.3
+info:
+  title: Rivy Storefront API
+  version: 0.1.0
+servers:
+  - url: http://localhost:4000/api/v1
+  /health:
+    get:
+      summary: Health check
+      responses:
+        '200':
+          description: OK
+  /products:
+    get:
+      summary: List products
+      parameters:
+        - in: query
+          name: q
+          schema: { type: string }
+      responses:
+        '200': { description: OK }
+  /products/{id}:
+    get:
+      summary: Get product by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200': { description: OK }
+  /products/categories:
+    get:
+      summary: List product categories
+      responses:
+        '200': { description: OK }
+  /reviews:
+    get:
+      summary: List reviews
+      responses:
+        '200': { description: OK }
+    post:
+      summary: Add review
+      responses:
+        '201': { description: Created }
+  /discounts:
+    get:
+      summary: List discounts
+      responses:
+        '200': { description: OK }
+    post:
+      summary: Create discount
+      responses:
+        '201': { description: Created }
+  /cart:
+    get:
+      summary: Get cart (demo, ip scoped)
+      responses:
+        '200': { description: OK }
+  /cart/items:
+    post:
+      summary: Add to cart
+      responses:
+        '201': { description: Created }
+    patch:
+      summary: Update item quantity
+      responses:
+        '200': { description: OK }
+  /cart/items/{productId}:
+    delete:
+      summary: Remove item
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          schema: { type: integer }
+      responses:
+        '200': { description: OK }
+  /checkout:
+    post:
+      summary: Simulate checkout and create order
+      responses:
+        '201': { description: Created }
+  /orders/{id}:
+    get:
+      summary: Get order by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200': { description: OK }
+  /admin/products:
+    post:
+      summary: Admin create product
+      responses:
+        '201': { description: Created }
+    put:
+      summary: Admin update product
+      responses:
+        '200': { description: OK }
+    delete:
+      summary: Admin delete product
+      responses:
+        '204': { description: No Content }
