@@ -1,40 +1,36 @@
-# Render.com configuration file
-# This file helps Render understand your deployment setup
+# Render.com configuration for backend-only deployment
+# Frontend will be deployed separately on Vercel
 
-# Build settings
-build:
-  # Use Docker
-  dockerfilePath: ./apps/backend/Dockerfile
-  dockerContext: ./apps/backend
-  
-# Service settings
 services:
   - type: web
     name: rivy-storefront-backend
-    env: docker
+    runtime: node
     region: oregon
     plan: starter
-    branch: main
-    rootDir: ./apps/backend
-    dockerfilePath: ./Dockerfile
-    dockerContext: .
+    branch: dev
     
-    # Environment variables
+    # Monorepo configuration
+    rootDir: apps/backend
+    
+    # Build and start commands
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    
+    # Environment variables (add sensitive values via Render dashboard)
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
         value: 4000
-      # Add other env vars through Render dashboard for security
     
-    # Health check
+    # Health check endpoint
     healthCheckPath: /api/v1/health
     
-    # Auto-deploy settings
+    # Auto-deploy from GitHub
     autoDeploy: true
     
-    # Resource allocation
+    # Disk allocation
     disk:
-      name: data
-      mountPath: /data
+      name: backend-data
+      mountPath: /tmp
       sizeGB: 1
