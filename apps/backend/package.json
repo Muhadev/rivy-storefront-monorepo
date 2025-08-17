@@ -16,8 +16,17 @@
     "test:coverage": "jest --coverage --runInBand",
     "test:build": "npm run build && npm test",
     "db:migrate": "npx sequelize-cli db:migrate",
+    "db:migrate:status": "npx sequelize-cli db:migrate:status",
+    "db:migrate:undo": "npx sequelize-cli db:migrate:undo",
+    "db:migrate:undo:all": "npx sequelize-cli db:migrate:undo:all",
+    "db:migrate:create": "npx sequelize-cli migration:generate --name",
+    "db:migrate:prod": "NODE_ENV=production npx sequelize-cli db:migrate",
+    "db:migrate:prod:status": "NODE_ENV=production npx sequelize-cli db:migrate:status",
     "db:seed": "npx sequelize-cli db:seed:all",
-    "db:reset": "npx sequelize-cli db:drop && npx sequelize-cli db:create && npm run db:migrate && npm run db:seed"
+    "db:seed:create": "npx sequelize-cli seed:generate --name",
+    "db:reset": "npx sequelize-cli db:drop && npx sequelize-cli db:create && npm run db:migrate && npm run db:seed",
+    "seed:prod": "NODE_ENV=production node -r dotenv/config dist/seed.js dotenv_config_path=.env.production.local",
+    "seed:build": "npm run build && npm run seed:prod"
   },
   "dependencies": {
     "@types/bcryptjs": "^2.4.6",
@@ -54,7 +63,7 @@
     "@typescript-eslint/parser": "^7.14.1",
     "eslint": "^9.5.0",
     "jest": "^29.7.0",
-    "sequelize-cli": "^6.6.2",
+    "sequelize-cli": "^6.6.3",
     "supertest": "^7.0.0",
     "ts-jest": "^29.4.1",
     "ts-node-dev": "^2.0.0"

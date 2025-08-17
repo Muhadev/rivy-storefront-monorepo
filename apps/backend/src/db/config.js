@@ -1,4 +1,7 @@
-// Replace entire file content:
+require('dotenv').config({ 
+  path: require('path').resolve(__dirname, '../../.env.production.local') 
+});
+
 module.exports = {
   development: {
     username: process.env.DB_USER || 'rivy',
@@ -7,7 +10,11 @@ module.exports = {
     host: process.env.DB_HOST || 'db',
     port: process.env.DB_PORT || 5432,
     dialect: 'postgres',
-    logging: false
+    logging: console.log, // Enable logging in development
+    define: {
+      underscored: false, // Use camelCase
+      timestamps: true
+    }
   },
   test: {
     username: process.env.DB_USER || 'rivy',
@@ -16,18 +23,34 @@ module.exports = {
     host: process.env.DB_HOST || 'db',
     port: process.env.DB_PORT || 5432,
     dialect: 'postgres',
-    logging: false
+    logging: false, // Disable logging in tests
+    define: {
+      underscored: false,
+      timestamps: true
+    }
   },
   production: {
-    username: process.env.DB_USER || 'rivy',
-    password: process.env.DB_PASSWORD || 'rivy',
-    database: process.env.DB_NAME || 'rivy',
-    host: process.env.DB_HOST || 'db',
-    port: process.env.DB_PORT || 5432,
+    use_env_variable: 'DATABASE_URL',
     dialect: 'postgres',
-    logging: false
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
+    },
+    logging: false, // Disable logging in production for performance
+    define: {
+      underscored: false,
+      timestamps: true
+    },
+    pool: {
+      max: 5,
+      min: 0,
+      acquire: 30000,
+      idle: 10000
+    }
   }
-};require('dotenv').config({ path: require('path').resolve(__dirname, '../../.env') });
+};
 
 module.exports = {
   development: {
