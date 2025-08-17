@@ -24,8 +24,9 @@ describe('Discount Endpoints', () => {
   it('should create a discount', async () => {
     const newDiscount = {
       code: 'TEST10',
-      percentage: 10,
-      active: true
+      type: 'percentage',
+      value: 10,
+      isActive: true
     };
 
     const res = await request(app)
@@ -35,14 +36,14 @@ describe('Discount Endpoints', () => {
     
     expect(res.status).toBe(201);
     expect(res.body.code).toBe(newDiscount.code);
-    expect(res.body.percentage).toBe(newDiscount.percentage);
+    expect(parseFloat(res.body.value)).toBe(newDiscount.value);
     discountId = res.body.id;
   });
 
   it('should update a discount', async () => {
     const updateData = {
-      percentage: 15,
-      active: false
+      value: 15,
+      isActive: false
     };
 
     const res = await request(app)
@@ -52,8 +53,8 @@ describe('Discount Endpoints', () => {
     
     expect(res.status).toBe(200);
     expect(res.body.code).toBe('TEST10'); // Code should remain unchanged
-    expect(res.body.percentage).toBe(updateData.percentage);
-    expect(res.body.active).toBe(updateData.active);
+    expect(parseFloat(res.body.value)).toBe(updateData.value);
+    expect(res.body.isActive).toBe(updateData.isActive);
   });
 
   it('should delete a discount', async () => {

@@ -11,6 +11,10 @@ import User from './User';
 Order.hasMany(OrderItem, { foreignKey: 'orderId' });
 OrderItem.belongsTo(Order, { foreignKey: 'orderId' });
 
+// OrderItem-Product associations
+OrderItem.belongsTo(Product, { foreignKey: 'productId', as: 'product' });
+Product.hasMany(OrderItem, { foreignKey: 'productId', as: 'orderItems' });
+
 // User-Order associations
 User.hasMany(Order, { foreignKey: 'userId' });
 Order.belongsTo(User, { foreignKey: 'userId' });
@@ -21,11 +25,11 @@ Review.belongsTo(Product, { foreignKey: 'productId' });
 User.hasMany(Review, { foreignKey: 'userId' });
 Review.belongsTo(User, { foreignKey: 'userId' });
 
-// CartItem associations - KEEP ONLY THESE WITH ALIASES
-CartItem.belongsTo(Product, { foreignKey: 'productId', as: 'Product' });
-CartItem.belongsTo(User, { foreignKey: 'userId', as: 'User' });
-Product.hasMany(CartItem, { foreignKey: 'productId', as: 'CartItems' });
-User.hasMany(CartItem, { foreignKey: 'userId', as: 'CartItems' });
+// CartItem associations - using unique aliases
+CartItem.belongsTo(Product, { foreignKey: 'productId', as: 'product' });
+CartItem.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+Product.hasMany(CartItem, { foreignKey: 'productId', as: 'cartItems' });
+User.hasMany(CartItem, { foreignKey: 'userId', as: 'cartItems' });
 
 // Category-Product associations
 Category.hasMany(Product, { foreignKey: 'categoryId', as: 'products' });

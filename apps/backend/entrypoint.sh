@@ -12,10 +12,6 @@ done
 
 echo "✅ Database is ready!"
 
-# Build the application
-echo "🔨 Building application..."
-npm run build
-
 # Start the application (database sync happens in app startup)
 echo "🚀 Starting server..."
 exec npm run start

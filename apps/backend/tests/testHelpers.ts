@@ -82,13 +82,17 @@ export async function setupTestDatabase() {
     await Discount.bulkCreate([
       {
         code: 'SOLAR20',
-        percentage: 20,
-        active: true
+        type: 'percentage',
+        value: 20,
+        isActive: true,
+        description: 'Solar panel discount'
       },
       {
         code: 'BATTERY10',
-        percentage: 10,
-        active: true
+        type: 'percentage', 
+        value: 10,
+        isActive: true,
+        description: 'Battery discount'
       }
     ]);
 

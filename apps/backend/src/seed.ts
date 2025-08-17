@@ -36,7 +36,13 @@ async function main() {
     { name: 'Solar Cable Kit', description: 'MC4 connector cable kit', price: 35.00, stock: 100, categoryId: categories[4].id, imageUrl: 'https://example.com/cable-kit.jpg' }
   ]);
   // Discounts
-  await Discount.create({ code: 'SUMMER25', percentage: 25, active: true });
+  await Discount.create({ 
+    code: 'SUMMER25', 
+    type: 'percentage', 
+    value: 25, 
+    isActive: true,
+    description: 'Summer sale discount' 
+  });
 
   // Reviews
   await Review.create({ productId: products[0].id, userId: user.id, rating: 5, comment: 'Great panel!' });

@@ -5,7 +5,7 @@ class CartRepository {
   static async getCart(userId: number) {
     return CartItem.findAll({
       where: { userId },
-      include: [{ model: Product, as: 'Product' }]
+      include: [{ model: Product, as: 'product' }]
     });
   }
 

@@ -22,13 +22,6 @@ class Product extends Model<ProductAttributes, ProductCreation> implements Produ
   public categoryId!: number | null;
   public imageUrl!: string | null;
 
-  // Add the associate method INSIDE the class
-  static associate(models: any) {
-    Product.belongsTo(models.Category, {
-      foreignKey: 'categoryId',
-      as: 'category'
-    });
-  }
 }
 
 
