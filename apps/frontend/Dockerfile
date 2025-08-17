@@ -1,7 +1,55 @@
-FROM node:20-alpine
+# Frontend Dockerfile
+# Multi-stage build for optimized production deployment
+
+# Build stage
+FROM node:18-alpine AS builder
+
+# Set working directory
 WORKDIR /app
+
+# Copy package files
 COPY package*.json ./
-RUN npm i
+
+# Install dependencies
+RUN npm install
+
+# Copy source code
 COPY . .
-EXPOSE 5173
-CMD ["npm","run","dev","--","--host"]
+
+# Build the application
+RUN npm run build
+
+# Production stage
+FROM nginx:alpine AS production
+
+# Install security updates
+RUN apk update && apk upgrade && apk add --no-cache \
+    curl \
+    && rm -rf /var/cache/apk/*
+
+# Copy built assets from builder stage
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Copy custom nginx configuration
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Create nginx user and set permissions
+RUN addgroup -g 101 -S nginx && \
+    adduser -S -D -H -u 101 -h /var/cache/nginx -s /sbin/nologin -G nginx -g nginx nginx && \
+    chown -R nginx:nginx /usr/share/nginx/html && \
+    chown -R nginx:nginx /var/cache/nginx && \
+    chown -R nginx:nginx /var/log/nginx && \
+    chown -R nginx:nginx /etc/nginx/conf.d
+
+# Switch to non-root user
+USER nginx
+
+# Expose port
+EXPOSE 80
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost/ || exit 1
+
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]
