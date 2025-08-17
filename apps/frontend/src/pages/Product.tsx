@@ -1,26 +1,26 @@
-import { useParams, Link } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
-import api from '../lib/api'
+import React from 'react';
+import { useParams } from 'react-router-dom';
 
-export default function Product() {
-  const { id } = useParams()
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['product', id],
-    queryFn: async () => (await api.get('/products/' + id)).data
-  })
-  if (!id) return null
-  if (isLoading) return <div>Loading product...</div>
-  if (error) return <div>Error loading product</div>
-  const p = data
+const Product: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+
   return (
-    <div className="grid md:grid-cols-2 gap-6">
-      <img src={p.imageUrl || 'https://via.placeholder.com/600x400'} className="w-full rounded-2xl" />
-      <div>
-        <h1 className="text-2xl font-bold">{p.name}</h1>
-        <p className="text-gray-600 mt-2">{p.description}</p>
-        <div className="text-xl font-semibold mt-4">${p.price}</div>
-        <Link to="/cart" className="btn btn-primary mt-4">Go to Cart</Link>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-8">Product Details</h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="aspect-square bg-gray-200 rounded-lg">
+          {/* Product image placeholder */}
+        </div>
+        <div>
+          <h2 className="text-2xl font-bold mb-4">Product {id}</h2>
+          <p className="text-gray-600 mb-6">Product details will be implemented here...</p>
+          <button className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700">
+            Add to Cart
+          </button>
+        </div>
       </div>
     </div>
-  )
-}
+  );
+};
+
+export default Product;

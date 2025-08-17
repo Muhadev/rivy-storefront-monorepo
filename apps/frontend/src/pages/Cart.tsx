@@ -1,28 +1,24 @@
-import { useQuery, useMutation } from '@tanstack/react-query'
-import api from '../lib/api'
+import React from 'react';
 
-export default function Cart() {
-  const cart = useQuery({ queryKey: ['cart'], queryFn: async () => (await api.get('/cart')).data })
-  const update = useMutation({ mutationFn: (payload: any) => api.patch('/cart/items', payload).then(r => r.data), onSuccess: () => cart.refetch() })
-  const remove = useMutation({ mutationFn: (id: number) => api.delete('/cart/items/'+id).then(r => r.data), onSuccess: () => cart.refetch() })
-
-  if (cart.isLoading) return <div>Loading cart...</div>
-  if (cart.error) return <div>Error loading cart</div>
-  const items = cart.data.items || []
+const Cart: React.FC = () => {
   return (
-    <div className="card">
-      <h2 className="text-xl font-semibold mb-4">Cart</h2>
-      {items.length === 0 ? <div>Cart is empty</div> : (
-        <ul className="space-y-2">
-          {items.map((it: any) => (
-            <li key={it.productId} className="flex items-center gap-3">
-              <div className="flex-1">Product #{it.productId}</div>
-              <input type="number" min={1} className="input w-24" value={it.quantity} onChange={(e) => update.mutate({ productId: it.productId, quantity: Number(e.target.value) })}/>
-              <button className="btn" onClick={() => remove.mutate(it.productId)}>Remove</button>
-            </li>
-          ))}
-        </ul>
-      )}
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-8">Shopping Cart</h1>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2">
+          <div className="text-center text-gray-500 py-8">
+            Your cart is empty
+          </div>
+        </div>
+        <div className="bg-gray-50 p-6 rounded-lg h-fit">
+          <h3 className="text-lg font-semibold mb-4">Order Summary</h3>
+          <div className="text-center text-gray-500">
+            Cart functionality coming soon...
+          </div>
+        </div>
+      </div>
     </div>
-  )
-}
+  );
+};
+
+export default Cart;

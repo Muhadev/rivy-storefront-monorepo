@@ -1,21 +1,25 @@
-import { useMutation } from '@tanstack/react-query'
-import api from '../lib/api'
-import { useNavigate } from 'react-router-dom'
+import React from 'react';
 
-export default function Checkout() {
-  const nav = useNavigate()
-  const mutate = useMutation({
-    mutationFn: (payload: any) => api.post('/checkout', payload).then(r => r.data),
-    onSuccess: (data) => nav('/confirm/'+data.orderId)
-  })
-
+const Checkout: React.FC = () => {
   return (
-    <div className="card">
-      <h2 className="text-xl font-semibold mb-4">Checkout Summary</h2>
-      <p className="text-sm text-gray-600 mb-4">This simulates a checkout by sending a list of items.</p>
-      <button className="btn btn-primary" onClick={() => mutate.mutate({ items: [{ productId: 1, quantity: 1 }] })}>
-        Simulate Checkout
-      </button>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-8">Checkout</h1>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div>
+          <h2 className="text-xl font-semibold mb-4">Shipping Information</h2>
+          <div className="text-gray-500">
+            Checkout form coming soon...
+          </div>
+        </div>
+        <div>
+          <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
+          <div className="text-gray-500">
+            Order summary coming soon...
+          </div>
+        </div>
+      </div>
     </div>
-  )
-}
+  );
+};
+
+export default Checkout;
