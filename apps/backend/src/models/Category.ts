@@ -5,6 +5,7 @@ interface CategoryAttributes {
   id: number; 
   name: string; 
   description?: string;
+  productCount?: number; // Virtual field for product count
 }
 type CategoryCreation = Optional<CategoryAttributes, 'id'>;
 
@@ -12,6 +13,7 @@ class Category extends Model<CategoryAttributes, CategoryCreation> implements Ca
   public id!: number;
   public name!: string;
   public description?: string;
+  public productCount?: number; // Virtual field
 }
 
 Category.init({

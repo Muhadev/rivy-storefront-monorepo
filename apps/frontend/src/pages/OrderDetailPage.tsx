@@ -189,9 +189,13 @@ export function OrderDetailPage() {
                   <Button 
                     variant="outline" 
                     className="w-full text-red-600 border-red-300 hover:bg-red-50"
-                    onClick={() => {
-                      // Handle order cancellation
-                      toast.success('Order cancellation requested');
+                    onClick={async () => {
+                      try {
+                        await useOrderStore.getState().cancelOrder(order.id);
+                        toast.success('Order cancelled');
+                      } catch (err) {
+                        toast.error('Failed to cancel order');
+                      }
                     }}
                   >
                     Cancel Order

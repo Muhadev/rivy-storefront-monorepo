@@ -9,6 +9,7 @@ interface ProductAttributes {
   stock: number;
   categoryId: number | null;
   imageUrl: string | null;
+  createdBy: number;
 }
 
 type ProductCreation = Optional<ProductAttributes, 'id' | 'categoryId' | 'imageUrl'>;
@@ -21,6 +22,7 @@ class Product extends Model<ProductAttributes, ProductCreation> implements Produ
   public stock!: number;
   public categoryId!: number | null;
   public imageUrl!: string | null;
+  public createdBy!: number;
 
 }
 
@@ -32,7 +34,8 @@ Product.init({
   price: { type: DataTypes.FLOAT, allowNull: false },
   stock: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
   categoryId: { type: DataTypes.INTEGER, allowNull: true },
-  imageUrl: { type: DataTypes.STRING, allowNull: true }
+  imageUrl: { type: DataTypes.STRING, allowNull: true },
+  createdBy: { type: DataTypes.INTEGER, allowNull: false }
 }, { sequelize, tableName: 'products' });
 
 export default Product;

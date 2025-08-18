@@ -1,6 +1,6 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import path from 'path'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import path from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -10,10 +10,6 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
-  define: {
-    // This helps with import.meta.env
-    global: 'globalThis',
-  },
   server: {
     port: 3000,
     host: true,
@@ -22,4 +18,7 @@ export default defineConfig({
     outDir: 'dist',
     sourcemap: true,
   },
-})
+  optimizeDeps: {
+    exclude: ['lucide-react'],
+  },
+});

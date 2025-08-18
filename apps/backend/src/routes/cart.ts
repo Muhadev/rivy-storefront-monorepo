@@ -5,11 +5,10 @@ import validate from '../middlewares/validate';
 import { addItemSchema, updateItemSchema, removeItemSchema } from '../validators/cart';
 import rateLimit from '../middlewares/rateLimit';
 import logger from '../middlewares/logging';
-import retryMiddleware from '../middlewares/retry';
 
 const router = Router();
 
-router.get('/', authenticate, retryMiddleware(), rateLimit, logger, CartController.getCart);
+router.get('/', authenticate, rateLimit, logger, CartController.getCart);
 router.post('/items', authenticate, rateLimit, logger, validate([addItemSchema]), CartController.addItem);
 router.patch('/items/:productId', authenticate, rateLimit, logger, validate([updateItemSchema]), CartController.updateItem);
 router.delete('/items/:productId', authenticate, rateLimit, logger, CartController.removeItem);

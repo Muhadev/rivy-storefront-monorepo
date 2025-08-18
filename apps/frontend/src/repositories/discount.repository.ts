@@ -19,13 +19,12 @@ export interface Discount {
 
 export interface ApplyDiscountData {
   code: string;
-  totalAmount: number;
+  orderAmount: number;
 }
 
 export interface DiscountResult {
   discount: Discount;
-  discountAmount: number;
-  finalAmount: number;
+  amount: number;
 }
 
 export class DiscountRepository {
@@ -34,35 +33,9 @@ export class DiscountRepository {
   }
 
   async applyDiscount(data: ApplyDiscountData): Promise<DiscountResult> {
-    // For now, we'll simulate discount application since backend doesn't have this endpoint
-    // In a real implementation, this would be a POST to /discounts/apply
-    const discounts = await this.getDiscounts();
-    const discount = discounts.find(d => d.code === data.code && d.isActive);
-    
-    if (!discount) {
-      throw new Error('Invalid discount code');
-    }
-
-    if (discount.minOrderAmount && data.totalAmount < discount.minOrderAmount) {
-      throw new Error(`Minimum order amount is $${discount.minOrderAmount}`);
-    }
-
-    let discountAmount = 0;
-    if (discount.type === 'percentage') {
-      discountAmount = (data.totalAmount * discount.value) / 100;
-    } else {
-      discountAmount = discount.value;
-    }
-
-    // Ensure discount doesn't exceed order total
-    discountAmount = Math.min(discountAmount, data.totalAmount);
-    const finalAmount = data.totalAmount - discountAmount;
-    
-    return {
-      discount,
-      discountAmount,
-      finalAmount
-    };
+  // Real backend call
+  const response = await apiClient.post<DiscountResult>(ENDPOINTS.DISCOUNTS.APPLY, data);
+  return response;
   }
 
   async validateDiscount(code: string): Promise<Discount> {

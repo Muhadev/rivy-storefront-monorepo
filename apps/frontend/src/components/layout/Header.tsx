@@ -50,12 +50,6 @@ export function Header() {
               Products
             </Link>
             <Link 
-              to="/products" 
-              className="text-gray-700 hover:text-green-600 font-medium transition-colors"
-            >
-              Categories
-            </Link>
-            <Link 
               to="/about" 
               className="text-gray-700 hover:text-green-600 font-medium transition-colors"
             >

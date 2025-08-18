@@ -1,83 +1,62 @@
-/**
- * Utility functions for formatting data
- */
-
-/**
- * Format currency values
- */
-export function formatCurrency(amount: number): string {
+export function formatPrice(price: number): string {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
-  }).format(amount);
+    minimumFractionDigits: 2,
+  }).format(price);
 }
 
-/**
- * Format date values
- */
-export function formatDate(date: string | Date): string {
-  const dateObj = typeof date === 'string' ? new Date(date) : date;
+export function formatDate(date: string): string {
   return new Intl.DateTimeFormat('en-US', {
     year: 'numeric',
-    month: 'short',
+    month: 'long',
     day: 'numeric',
-  }).format(dateObj);
+  }).format(new Date(date));
 }
 
-/**
- * Format date and time values
- */
-export function formatDateTime(date: string | Date): string {
-  const dateObj = typeof date === 'string' ? new Date(date) : date;
+export function formatDateTime(date: string): string {
   return new Intl.DateTimeFormat('en-US', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
-  }).format(dateObj);
+  }).format(new Date(date));
 }
 
-/**
- * Format relative time (e.g., "2 hours ago")
- */
-export function formatRelativeTime(date: string | Date): string {
-  const dateObj = typeof date === 'string' ? new Date(date) : date;
-  const now = new Date();
-  const diffInSeconds = Math.floor((now.getTime() - dateObj.getTime()) / 1000);
-
-  if (diffInSeconds < 60) return 'Just now';
-  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
-  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
-  if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)} days ago`;
-  
-  return formatDate(dateObj);
+export function formatNumber(num: number): string {
+  return new Intl.NumberFormat('en-US').format(num);
 }
 
-/**
- * Format file size in bytes to human readable format
- */
-export function formatFileSize(bytes: number): string {
-  if (bytes === 0) return '0 Bytes';
-  
-  const k = 1024;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-}
-
-/**
- * Format percentage
- */
-export function formatPercentage(value: number, decimals: number = 1): string {
-  return `${value.toFixed(decimals)}%`;
-}
-
-/**
- * Truncate text to a specified length
- */
 export function truncateText(text: string, maxLength: number): string {
   if (text.length <= maxLength) return text;
-  return text.slice(0, maxLength) + '...';
+  return text.slice(0, maxLength).trim() + '...';
+}
+
+export function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^\w ]+/g, '')
+    .replace(/ +/g, '-');
+}
+
+export function capitalizeFirst(text: string): string {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+export function getOrderStatusColor(status: string): string {
+  switch (status) {
+    case 'pending':
+      return 'bg-yellow-100 text-yellow-800';
+    case 'processing':
+      return 'bg-blue-100 text-blue-800';
+    case 'shipped':
+      return 'bg-purple-100 text-purple-800';
+    case 'delivered':
+      return 'bg-green-100 text-green-800';
+    case 'cancelled':
+      return 'bg-red-100 text-red-800';
+    default:
+      return 'bg-gray-100 text-gray-800';
+  }
 }

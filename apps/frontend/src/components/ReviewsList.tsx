@@ -219,7 +219,7 @@ const ReviewsList: React.FC<ReviewsListProps> = ({ productId }) => {
       )}
 
       {/* Show review form for users who haven't reviewed yet */}
-      {user && !userHasReviewed && !showForm && productReviews.length > 0 && (
+      {user && !userHasReviewed && !showForm && (
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">

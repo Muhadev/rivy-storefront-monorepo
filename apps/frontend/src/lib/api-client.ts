@@ -40,36 +40,17 @@ class ApiClient {
     // Response interceptor
     this.client.interceptors.response.use(
       (response: AxiosResponse) => response,
-      async (error: AxiosError<ApiError>) => {
-        const originalRequest = error.config as ExtendedAxiosRequestConfig;
-        
+      (error: AxiosError<ApiError>) => {
         if (error.response?.status === 401) {
           this.clearAuth();
           toast.error('Session expired. Please login again.');
           window.location.href = '/auth/login';
           return Promise.reject(error);
         }
-        
         if (error.response?.status === 429) {
           toast.error('Too many requests. Please try again later.');
           return Promise.reject(error);
         }
-        
-        // Retry logic for network errors
-        if (
-          !error.response && 
-          this.retryCount < API_CONFIG.RETRY_ATTEMPTS &&
-          originalRequest &&
-          !originalRequest._retry
-        ) {
-          originalRequest._retry = true;
-          this.retryCount++;
-          
-          await this.delay(API_CONFIG.RETRY_DELAY * this.retryCount);
-          return this.client.request(originalRequest);
-        }
-        
-        this.retryCount = 0;
         this.handleError(error);
         return Promise.reject(error);
       }

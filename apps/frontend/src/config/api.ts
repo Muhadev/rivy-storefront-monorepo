@@ -43,6 +43,7 @@ export const ENDPOINTS = {
     LIST: '/orders/user/me',
     DETAIL: (id: number) => `/orders/${id}`,
     CONFIRM: (id: number) => `/orders/${id}/confirm`,
+    CANCEL: (id: number) => `/orders/${id}/cancel`,
   },
   
   // Checkout
@@ -62,6 +63,7 @@ export const ENDPOINTS = {
     CREATE: '/discounts',
     UPDATE: (id: number) => `/discounts/${id}`,
     DELETE: (id: number) => `/discounts/${id}`,
+    APPLY: '/discounts/apply',
   },
   
   // Users

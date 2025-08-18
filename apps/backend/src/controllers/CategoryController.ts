@@ -1,12 +1,35 @@
 import { Request, Response, NextFunction } from 'express';
 import Category from '../models/Category';
+import Product from '../models/Product';
 import { WhereOptions } from 'sequelize';
 import { z } from 'zod';
 
 class CategoryController {
   static async list(req: Request, res: Response, next: NextFunction) {
     try {
-      const categories = await Category.findAll();
+      const categories = await Category.findAll({
+        include: [
+          {
+            model: Product,
+            as: 'products',
+            attributes: [], // Don't include product data, just count
+          }
+        ],
+        attributes: {
+          include: [
+            // Add productCount as a virtual field using subquery
+            [
+              // This will count the products for each category
+              Category.sequelize!.literal(`(
+                SELECT COUNT(*)
+                FROM products 
+                WHERE products.categoryId = Category.id
+              )`),
+              'productCount'
+            ]
+          ]
+        }
+      });
       res.json(categories);
     } catch (err) {
       next(err);

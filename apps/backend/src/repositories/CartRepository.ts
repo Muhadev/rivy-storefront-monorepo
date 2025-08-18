@@ -1,12 +1,28 @@
-import CartItem from '../models/CartItem';
-import Product from '../models/Product';
+import { CartItem, Product } from '../models';
+// Ensure associations are loaded
+import '../models';
 
 class CartRepository {
   static async getCart(userId: number) {
-    return CartItem.findAll({
-      where: { userId },
-      include: [{ model: Product, as: 'product' }]
+    // Temporarily simplified to avoid association issues
+    const cartItems = await CartItem.findAll({
+      where: { userId }
     });
+    
+    // Manually fetch product data for each cart item
+    const cartWithProducts = await Promise.all(
+      cartItems.map(async (item) => {
+        const product = await Product.findByPk(item.productId, {
+          attributes: ['id', 'name', 'description', 'price', 'imageUrl']
+        });
+        return {
+          ...item.toJSON(),
+          product: product?.toJSON()
+        };
+      })
+    );
+    
+    return cartWithProducts;
   }
 
   static async addItem(userId: number, productId: number, quantity: number) {

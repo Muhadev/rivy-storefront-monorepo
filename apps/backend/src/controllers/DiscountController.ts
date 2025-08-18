@@ -2,6 +2,17 @@ import { Request, Response, NextFunction } from 'express';
 import DiscountService from '.././services/DiscountService';
 
 export default class DiscountController {
+  // Apply and validate discount code
+  static async applyDiscount(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { code, orderAmount } = req.body;
+      const discount = await DiscountService.validateDiscount(code, orderAmount);
+      const amount = DiscountService.calculateDiscountAmount(discount, orderAmount);
+      res.json({ discount, amount });
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  }
   static async list(req: Request, res: Response, next: NextFunction) {
     try {
       const discounts = await DiscountService.list(req.query);

@@ -16,6 +16,7 @@ interface CreateProductData {
   stock: number;
   categoryId?: number;
   imageUrl?: string;
+  createdBy: number;
 }
 
 interface UpdateProductData {
@@ -28,7 +29,7 @@ interface UpdateProductData {
 }
 
 class ProductService {
-  static async getAll(query: ProductQuery) {
+  static async getAll(query: ProductQuery & { createdBy?: number }) {
     return ProductRepository.getAll(query);
   }
 
@@ -40,12 +41,12 @@ class ProductService {
     return await ProductRepository.create(data);
   }
 
-  static async update(id: number, data: UpdateProductData) {
-    return await ProductRepository.update(id, data);
+  static async update(id: number, data: UpdateProductData, userId: number) {
+    return await ProductRepository.update(id, data, userId);
   }
 
-  static async delete(id: number) {
-    return await ProductRepository.delete(id);
+  static async delete(id: number, userId: number) {
+    return await ProductRepository.delete(id, userId);
   }
 }
 

@@ -37,7 +37,9 @@ class HealthController {
       // Check memory usage
       const memoryInfo = HealthController.getMemoryInfo();
       const memoryPercentage = parseFloat(memoryInfo.percentage.replace('%', ''));
-      const memoryStatus = memoryPercentage < 90 ? 'healthy' : 'unhealthy';
+      // More lenient memory threshold for development (95% instead of 90%)
+      const memoryThreshold = process.env.NODE_ENV === 'development' ? 95 : 90;
+      const memoryStatus = memoryPercentage < memoryThreshold ? 'healthy' : 'unhealthy';
       
       // Overall health status
       const isHealthy = dbStatus === 'healthy' && memoryStatus === 'healthy';

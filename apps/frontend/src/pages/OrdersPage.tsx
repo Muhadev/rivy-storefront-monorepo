@@ -48,9 +48,9 @@ export function OrdersPage() {
           <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Please Login</h2>
           <p className="text-gray-600 mb-6">You need to be logged in to view your orders.</p>
-          <Button asChild>
-            <Link to="/auth/login">Login</Link>
-          </Button>
+          <Link to="/auth/login">
+            <Button>Login</Button>
+          </Link>
         </div>
       </div>
     );
@@ -146,11 +146,11 @@ function OrderCard({ order }: { order: Order }) {
         </div>
         
         <div className="flex space-x-3">
-          <Button variant="outline" size="sm" asChild>
-            <Link to={`/orders/${order.id}`}>
+          <Link to={`/orders/${order.id}`}>
+            <Button variant="outline" size="sm">
               View Details
-            </Link>
-          </Button>
+            </Button>
+          </Link>
           
           {order.status === 'pending' && (
             <Button variant="destructive" size="sm">

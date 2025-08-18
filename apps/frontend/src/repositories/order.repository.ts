@@ -25,6 +25,14 @@ export class OrderRepository {
     );
   }
 
+  async cancelOrder(id: number): Promise<{ id: number; status: string }> {
+    // Backend returns simplified response for cancel
+    return await apiClient.post<{ id: number; status: string }>(
+      ENDPOINTS.ORDERS.CANCEL(id),
+      {}
+    );
+  }
+
   async checkout(data: CheckoutData): Promise<Order> {
     // Backend returns order directly from checkout
     return await apiClient.post<Order>(ENDPOINTS.CHECKOUT, data);

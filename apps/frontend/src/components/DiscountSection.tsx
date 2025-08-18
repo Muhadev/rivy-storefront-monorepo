@@ -38,22 +38,17 @@ const DiscountSection: React.FC<DiscountSectionProps> = ({
       // First validate the discount code
       await validateDiscount(discountCode.trim());
 
-      // Then apply it to the cart
-      const cartItems = items.map((item: any) => ({
-        productId: item.product.id,
-        quantity: item.quantity
-      }));
-
+      // Apply discount using backend API
       const result = await applyDiscount({
         code: discountCode.trim(),
-        totalAmount: cartTotal
+        orderAmount: cartTotal
       });
 
-      setSuccess(`Discount applied! You saved $${result.discountAmount.toFixed(2)}`);
+      setSuccess(`Discount applied! You saved $${result.amount.toFixed(2)}`);
       setDiscountCode('');
       onDiscountApplied?.(result);
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Invalid discount code');
+      setError(err.response?.data?.error || err.message || 'Invalid discount code');
     }
   };
 
@@ -83,7 +78,7 @@ const DiscountSection: React.FC<DiscountSectionProps> = ({
                   <span className="text-sm text-green-700">
                     -{appliedDiscount.discount.type === 'percentage' 
                       ? `${appliedDiscount.discount.value}%` 
-                      : `$${appliedDiscount.discountAmount.toFixed(2)}`}
+                      : `$${appliedDiscount.amount.toFixed(2)}`}
                   </span>
                 </div>
                 <Button
@@ -98,7 +93,7 @@ const DiscountSection: React.FC<DiscountSectionProps> = ({
               <div className="text-right">
                 <p className="text-sm text-muted-foreground">
                   You saved: <span className="font-semibold text-green-600">
-                    ${appliedDiscount.discountAmount.toFixed(2)}
+                    ${appliedDiscount.amount.toFixed(2)}
                   </span>
                 </p>
               </div>

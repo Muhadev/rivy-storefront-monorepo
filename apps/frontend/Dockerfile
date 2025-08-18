@@ -1,55 +1,46 @@
-# Frontend Dockerfile
-# Multi-stage build for optimized production deployment
+FROM node:18-alpine AS base
 
-# Build stage
-FROM node:18-alpine AS builder
-
-# Set working directory
+# Install dependencies only when needed
+FROM base AS deps
+# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
-
 # Install dependencies
-RUN npm install
+COPY package.json package-lock.json* ./
+RUN npm ci --only=production && npm cache clean --force
 
-# Copy source code
+# Rebuild the source code only when needed
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Build the application
 RUN npm run build
 
-# Production stage
-FROM nginx:alpine AS production
+# Production image, copy all the files and run next
+FROM base AS runner
+WORKDIR /app
 
-# Install security updates
-RUN apk update && apk upgrade && apk add --no-cache \
-    curl \
-    && rm -rf /var/cache/apk/*
+ENV NODE_ENV production
 
-# Copy built assets from builder stage
-COPY --from=builder /app/dist /usr/share/nginx/html
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
 
-# Copy custom nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Install serve to run the built application
+RUN npm install -g serve
 
-# Create nginx user and set permissions
-RUN addgroup -g 101 -S nginx && \
-    adduser -S -D -H -u 101 -h /var/cache/nginx -s /sbin/nologin -G nginx -g nginx nginx && \
-    chown -R nginx:nginx /usr/share/nginx/html && \
-    chown -R nginx:nginx /var/cache/nginx && \
-    chown -R nginx:nginx /var/log/nginx && \
-    chown -R nginx:nginx /etc/nginx/conf.d
+# Copy the built application
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/package.json ./package.json
 
-# Switch to non-root user
-USER nginx
+USER nextjs
 
-# Expose port
-EXPOSE 80
+EXPOSE 3000
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost/ || exit 1
+ENV PORT 3000
+ENV HOSTNAME "0.0.0.0"
 
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Run the application
+CMD ["serve", "-s", "dist", "-l", "3000"]

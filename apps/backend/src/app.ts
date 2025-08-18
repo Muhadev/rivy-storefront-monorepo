@@ -10,6 +10,9 @@ import rateLimit from './middlewares/rateLimit';
 import { correlationId, securityHeaders } from './middlewares/security';
 import path from 'path';
 
+// Import models to ensure associations are set up
+import './models';
+
 const app = express();
 
 // Security and correlation tracking (early in middleware stack)

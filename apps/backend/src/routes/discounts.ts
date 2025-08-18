@@ -10,4 +10,7 @@ router.post('/', validate([createDiscountValidator]), DiscountController.create)
 router.put('/:id', validate([updateDiscountValidator]), DiscountController.update);
 router.delete('/:id', DiscountController.delete);
 
+// Apply and validate discount code
+router.post('/apply', DiscountController.applyDiscount);
+
 export default router;

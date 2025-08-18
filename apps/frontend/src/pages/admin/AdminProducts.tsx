@@ -22,7 +22,7 @@ import { Product } from '@/types/api';
 export function AdminProducts() {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 20;
+  const itemsPerPage = 4;
 
   // Fetch products with admin access
   const { data: productsData, isLoading, error } = useQuery({

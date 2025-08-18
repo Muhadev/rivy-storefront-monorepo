@@ -16,7 +16,7 @@ export function HomePage() {
   // Fetch featured products
   const { data: featuredProducts } = useQuery({
     queryKey: [...QUERY_KEYS.PRODUCTS, 'featured'],
-    queryFn: () => productRepository.getProducts({ limit: 8 }),
+    queryFn: () => productRepository.getProducts({ limit: 4 }),
   });
 
   // Fetch categories
@@ -225,7 +225,7 @@ export function HomePage() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {featuredProducts?.data?.slice(0, 8).map((product) => (
+              {featuredProducts?.data?.slice(0, 4).map((product) => (
                 <ProductCard
                   key={product.id}
                   product={product}

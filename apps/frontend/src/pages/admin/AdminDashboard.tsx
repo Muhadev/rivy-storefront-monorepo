@@ -1,62 +1,66 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { 
-  Package, 
-  ShoppingCart, 
-  Users, 
-  DollarSign, 
-  TrendingUp, 
-  AlertCircle,
-  Plus
-} from 'lucide-react';
+
+import { useEffect } from 'react';
+import { useOrderStore } from '@/stores/order.store';
+import { useUserStore } from '@/stores/user.store';
+import { useDiscountStore } from '@/stores/discount.store';
+import { useCartStore } from '@/stores/cart.store';
+import { useReviewStore } from '@/stores/review.store';
+import { useQuery } from '@tanstack/react-query';
+import { Package, ShoppingCart, Users, DollarSign, TrendingUp, AlertCircle, Plus, Star, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 
-const stats = [
-  {
-    name: 'Total Products',
-    value: '128',
-    change: '+12%',
-    changeType: 'positive' as const,
-    icon: Package,
-  },
-  {
-    name: 'Total Orders',
-    value: '2,847',
-    change: '+18%',
-    changeType: 'positive' as const,
-    icon: ShoppingCart,
-  },
-  {
-    name: 'Total Customers',
-    value: '1,429',
-    change: '+8%',
-    changeType: 'positive' as const,
-    icon: Users,
-  },
-  {
-    name: 'Revenue',
-    value: '$89,420',
-    change: '+23%',
-    changeType: 'positive' as const,
-    icon: DollarSign,
-  },
-];
-
-const recentOrders = [
-  { id: '1001', customer: 'John Doe', amount: '$299.99', status: 'pending', date: '2025-08-18' },
-  { id: '1002', customer: 'Jane Smith', amount: '$899.99', status: 'shipped', date: '2025-08-18' },
-  { id: '1003', customer: 'Bob Johnson', amount: '$149.99', status: 'delivered', date: '2025-08-17' },
-  { id: '1004', customer: 'Alice Brown', amount: '$599.99', status: 'pending', date: '2025-08-17' },
-];
-
-const lowStockProducts = [
-  { id: 1, name: 'High-Efficiency Solar Panel', stock: 2, threshold: 10 },
-  { id: 2, name: 'Lithium Battery Pack', stock: 1, threshold: 5 },
-  { id: 3, name: 'Smart Inverter', stock: 3, threshold: 8 },
-];
-
 export function AdminDashboard() {
+  const { orders, fetchOrders } = useOrderStore();
+  const { profile, fetchProfile } = useUserStore();
+  const { discounts, fetchDiscounts } = useDiscountStore();
+  const { items, fetchCart } = useCartStore();
+  const { reviews, fetchReviews } = useReviewStore();
+
+  useEffect(() => {
+    fetchOrders();
+    fetchProfile();
+    fetchDiscounts();
+    fetchCart();
+    fetchReviews();
+  }, []);
+
+  // Stats
+  const stats = [
+    {
+      name: 'Total Products',
+      value: items.length,
+      icon: Package,
+    },
+    {
+      name: 'Total Orders',
+      value: orders.length,
+      icon: ShoppingCart,
+    },
+    {
+      name: 'Total Customers',
+      value: profile ? 1 : 0, // For demo, replace with real customer count
+      icon: Users,
+    },
+    {
+      name: 'Discounts',
+      value: discounts.length,
+      icon: DollarSign,
+    },
+    {
+      name: 'Reviews',
+      value: reviews.length,
+      icon: Star,
+    },
+  ];
+
+  // Recent Orders
+  const recentOrders = orders.slice(0, 5);
+
+  // Low Stock Products (demo: items with stock <= 5)
+  const lowStockProducts = items.filter(item => item.product?.stock !== undefined && item.product.stock <= 5);
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -72,11 +76,35 @@ export function AdminDashboard() {
               Add Product
             </Button>
           </Link>
+          <Link to="/admin/orders">
+            <Button variant="outline">
+              <ShoppingCart className="h-4 w-4 mr-2" />
+              Orders
+            </Button>
+          </Link>
+          <Link to="/admin/reviews">
+            <Button variant="outline">
+              <Star className="h-4 w-4 mr-2" />
+              Reviews
+            </Button>
+          </Link>
+          <Link to="/admin/discounts">
+            <Button variant="outline">
+              <DollarSign className="h-4 w-4 mr-2" />
+              Discounts
+            </Button>
+          </Link>
+          <Link to="/admin/settings">
+            <Button variant="outline">
+              <Settings className="h-4 w-4 mr-2" />
+              Settings
+            </Button>
+          </Link>
         </div>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
         {stats.map((stat) => (
           <Card key={stat.name}>
             <CardContent className="p-6">
@@ -95,7 +123,8 @@ export function AdminDashboard() {
                       </div>
                       <div className="ml-2 flex items-baseline text-sm font-semibold text-green-600">
                         <TrendingUp className="h-4 w-4 mr-1" />
-                        {stat.change}
+                        {/* For demo, show +% */}
+                        +5%
                       </div>
                     </dd>
                   </dl>
@@ -123,11 +152,11 @@ export function AdminDashboard() {
                 <div key={order.id} className="flex items-center justify-between border-b border-gray-200 pb-4 last:border-b-0 last:pb-0">
                   <div>
                     <p className="font-medium text-gray-900">Order #{order.id}</p>
-                    <p className="text-sm text-gray-600">{order.customer}</p>
-                    <p className="text-xs text-gray-500">{order.date}</p>
+                    <p className="text-sm text-gray-600">{order.address}</p>
+                    <p className="text-xs text-gray-500">{order.createdAt}</p>
                   </div>
                   <div className="text-right">
-                    <p className="font-medium text-gray-900">{order.amount}</p>
+                    <p className="font-medium text-gray-900">${order.total}</p>
                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                       order.status === 'delivered' ? 'bg-green-100 text-green-800' :
                       order.status === 'shipped' ? 'bg-blue-100 text-blue-800' :
@@ -157,15 +186,15 @@ export function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {lowStockProducts.map((product) => (
-                <div key={product.id} className="flex items-center justify-between border-b border-gray-200 pb-4 last:border-b-0 last:pb-0">
+              {lowStockProducts.map((item) => (
+                <div key={item.product?.id || item.id} className="flex items-center justify-between border-b border-gray-200 pb-4 last:border-b-0 last:pb-0">
                   <div>
-                    <p className="font-medium text-gray-900">{product.name}</p>
-                    <p className="text-sm text-gray-600">Threshold: {product.threshold} units</p>
+                    <p className="font-medium text-gray-900">{item.product?.name}</p>
+                    <p className="text-sm text-gray-600">Threshold: 5 units</p>
                   </div>
                   <div className="text-right">
                     <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
-                      {product.stock} left
+                      {item.product?.stock} left
                     </span>
                   </div>
                 </div>

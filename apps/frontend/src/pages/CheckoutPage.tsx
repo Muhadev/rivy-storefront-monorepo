@@ -229,7 +229,7 @@ export function CheckoutPage() {
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-sm text-gray-600">Discount</span>
                     <span className="text-sm font-medium text-green-600">
-                      -{formatPrice(appliedDiscount.discountAmount)}
+                      -{formatPrice(appliedDiscount.amount)}
                     </span>
                   </div>
                 )}
@@ -239,7 +239,7 @@ export function CheckoutPage() {
                 </div>
                 <div className="flex justify-between items-center text-lg font-semibold text-gray-900 border-t pt-2">
                   <span>Total</span>
-                  <span>{formatPrice(totalPrice - (appliedDiscount?.discountAmount || 0))}</span>
+                  <span>{formatPrice(totalPrice - (appliedDiscount?.amount || 0))}</span>
                 </div>
               </div>
 

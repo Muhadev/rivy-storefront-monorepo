@@ -18,6 +18,13 @@ import { LoginPage } from '@/pages/auth/LoginPage';
 import { RegisterPage } from '@/pages/auth/RegisterPage';
 import { AdminDashboard } from '@/pages/admin/AdminDashboard';
 import { AdminProducts } from '@/pages/admin/AdminProducts';
+import { AdminOrders } from '@/pages/admin/AdminOrders';
+import { AdminReviews } from '@/pages/admin/AdminReviews';
+import { AdminReviewForm } from '@/pages/admin/AdminReviewForm';
+import { AdminDiscountForm } from '@/pages/admin/AdminDiscountForm';
+import { AdminDiscounts } from '@/pages/admin/AdminDiscounts';
+import { AdminProfile } from '@/pages/admin/AdminProfile';
+import AdminProductForm from '@/pages/admin/AdminProductForm';
 import ProfilePage from '@/pages/ProfilePage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
 
@@ -25,7 +32,14 @@ import { NotFoundPage } from '@/pages/NotFoundPage';
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      retry: 2,
+      retry: (failureCount, error: any) => {
+        // Don't retry on 429 (rate limit) or 401 (unauthorized) errors
+        if (error?.response?.status === 429 || error?.response?.status === 401) {
+          return false;
+        }
+        // Retry other errors up to 2 times
+        return failureCount < 2;
+      },
       staleTime: 5 * 60 * 1000, // 5 minutes
     },
   },
@@ -99,8 +113,22 @@ function AppContent() {
             </ProtectedRoute>
           }>
             <Route index element={<AdminDashboard />} />
-            <Route path="products" element={<AdminProducts />} />
-            {/* Add more admin routes here */}
+              <Route path="products">
+                <Route index element={<AdminProducts />} />
+                <Route path="new" element={<AdminProductForm />} />
+                <Route path=":id/edit" element={<AdminProductForm />} />
+              </Route>
+              <Route path="orders" element={<AdminOrders />} />
+              <Route path="profile" element={<AdminProfile />} />
+              <Route path="reviews" element={<AdminReviews />} />
+            <Route path="reviews/new" element={<AdminReviewForm />} />
+            <Route path="reviews/:id/edit" element={<AdminReviewForm />} />
+              <Route path="discounts" element={<AdminDiscounts />} />
+            <Route path="discounts/new" element={<AdminDiscountForm />} />
+            <Route path="discounts/:id/edit" element={<AdminDiscountForm />} />
+              <Route path="orders" element={<AdminOrders />} />
+              <Route path="profile" element={<AdminProfile />} />
+              {/* Add more admin routes here */}
           </Route>
           
           <Route path="*" element={<NotFoundPage />} />

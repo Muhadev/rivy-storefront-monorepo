@@ -1,5 +1,6 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import { sequelize } from '../db';
+import { OrderItem } from './OrderItem';
 
 interface OrderAttributes {
   id: number;
@@ -7,6 +8,7 @@ interface OrderAttributes {
   status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
   total: number;
   address: string;
+  items?: OrderItem[];
 }
 
 type OrderCreation = Optional<OrderAttributes, 'id' | 'status'>;
@@ -17,6 +19,7 @@ class Order extends Model<OrderAttributes, OrderCreation> implements OrderAttrib
   public status!: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
   public total!: number;
   public address!: string;
+  public items?: OrderItem[];
 }
 
 Order.init({
@@ -26,5 +29,8 @@ Order.init({
   total: { type: DataTypes.FLOAT, allowNull: false },
   address: { type: DataTypes.STRING, allowNull: false }
 }, { sequelize, tableName: 'orders' });
+
+// Define associations
+Order.hasMany(OrderItem, { as: 'items', foreignKey: 'orderId' });
 
 export default Order;

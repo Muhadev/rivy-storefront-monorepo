@@ -11,6 +11,7 @@ interface OrderState {
   getOrderById: (id: number) => Order | undefined;
   checkout: (data: CheckoutData) => Promise<Order>;
   confirmOrder: (id: number) => Promise<void>;
+  cancelOrder: (id: number) => Promise<void>;
   setLoading: (loading: boolean) => void;
 }
 
@@ -63,6 +64,21 @@ export const useOrderStore = create<OrderState>((set, get) => ({
     set({ isLoading: true });
     try {
       await orderRepository.confirmOrder(id);
+      // Refresh orders
+      await get().fetchOrders();
+      if (get().currentOrder?.id === id) {
+        await get().fetchOrder(id);
+      }
+    } catch (error) {
+      set({ isLoading: false });
+      throw error;
+    }
+  },
+
+  cancelOrder: async (id: number) => {
+    set({ isLoading: true });
+    try {
+      await orderRepository.cancelOrder(id);
       // Refresh orders
       await get().fetchOrders();
       if (get().currentOrder?.id === id) {

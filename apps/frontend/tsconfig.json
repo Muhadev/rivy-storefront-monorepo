@@ -11,7 +11,10 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "types": ["vite/client"]
+    "types": ["vite/client"],
+    "paths": {
+      "@/*": ["./*"]
+    }
   },
   "include": ["src", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules", "dist"]

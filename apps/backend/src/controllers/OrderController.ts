@@ -42,6 +42,17 @@ class OrderController {
     } catch (err) { next(err); }
   }
   
+  static async cancel(req: Request, res: Response, next: NextFunction) {
+    try {
+      const orderId = Number(req.params.id);
+      const order = await OrderService.cancelOrder(orderId, req.user!.id);
+      if (!order) return res.status(404).json({ error: 'Order not found or cannot be cancelled' });
+      res.json({ id: order.id, status: order.status });
+    } catch (err) {
+      next(err);
+    }
+  }
+  
   static async listByUser(req: Request, res: Response, next: NextFunction) {
     try {
       const orders = await OrderService.listByUser(req.user!.id);

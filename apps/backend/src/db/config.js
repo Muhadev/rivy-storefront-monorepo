@@ -1,56 +1,6 @@
 require('dotenv').config({ 
-  path: require('path').resolve(__dirname, '../../.env.production.local') 
+  path: require('path').resolve(__dirname, '../../.env') 
 });
-
-module.exports = {
-  development: {
-    username: process.env.DB_USER || 'rivy',
-    password: process.env.DB_PASSWORD || 'rivy',
-    database: process.env.DB_NAME || 'rivy',
-    host: process.env.DB_HOST || 'db',
-    port: process.env.DB_PORT || 5432,
-    dialect: 'postgres',
-    logging: console.log, // Enable logging in development
-    define: {
-      underscored: false, // Use camelCase
-      timestamps: true
-    }
-  },
-  test: {
-    username: process.env.DB_USER || 'rivy',
-    password: process.env.DB_PASSWORD || 'rivy',
-    database: process.env.DB_NAME || 'rivy_test',
-    host: process.env.DB_HOST || 'db',
-    port: process.env.DB_PORT || 5432,
-    dialect: 'postgres',
-    logging: false, // Disable logging in tests
-    define: {
-      underscored: false,
-      timestamps: true
-    }
-  },
-  production: {
-    use_env_variable: 'DATABASE_URL',
-    dialect: 'postgres',
-    dialectOptions: {
-      ssl: {
-        require: true,
-        rejectUnauthorized: false
-      }
-    },
-    logging: false, // Disable logging in production for performance
-    define: {
-      underscored: false,
-      timestamps: true
-    },
-    pool: {
-      max: 5,
-      min: 0,
-      acquire: 30000,
-      idle: 10000
-    }
-  }
-};
 
 module.exports = {
   development: {

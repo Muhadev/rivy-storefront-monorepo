@@ -1,0 +1,1429 @@
+# Rivy Clean Energy Storefront API Documentation
+
+**Version:** 1.0.0  
+**Base URL:** `http://localhost:4000/api/v1`  
+**Author:** Senior Backend Engineering Team  
+**Date:** August 17, 2025
+
+---
+
+## Table of Contents
+
+1. [Overview](#overview)
+2. [Authentication & Authorization](#authentication--authorization)
+3. [Common Response Patterns](#common-response-patterns)
+4. [Error Handling](#error-handling)
+5. [API Endpoints](#api-endpoints)
+   - [Health Check](#health-check)
+   - [Authentication](#authentication)
+   - [Products](#products)
+   - [Categories](#categories)
+   - [Cart Management](#cart-management)
+   - [Orders](#orders)
+   - [Checkout](#checkout)
+   - [Reviews](#reviews)
+   - [Discounts](#discounts)
+   - [User Management](#user-management)
+6. [Data Models](#data-models)
+7. [Frontend Integration Guide](#frontend-integration-guide)
+8. [Testing & Validation](#testing--validation)
+
+---
+
+## Overview
+
+Welcome to the Rivy Clean Energy Storefront API documentation. This RESTful API powers a modern e-commerce platform specializing in sustainable energy solutions including solar panels, batteries, inverters, and wind turbines.
+
+### Key Features
+- **Secure Authentication**: JWT-based authentication with role-based access control
+- **Product Catalog**: Comprehensive product management with categories and search
+- **Shopping Cart**: Persistent cart functionality for authenticated users
+- **Order Management**: Complete order lifecycle from creation to fulfillment
+- **Review System**: Customer reviews and ratings for products
+- **Discount System**: Flexible discount codes and promotional pricing
+
+### Technology Stack
+- **Runtime**: Node.js with Express.js
+- **Database**: PostgreSQL with Sequelize ORM
+- **Authentication**: JWT tokens with bcrypt password hashing
+- **Validation**: Zod schema validation
+- **Security**: Helmet, CORS, rate limiting, and security headers
+
+---
+
+## Authentication & Authorization
+
+### Authentication Flow
+
+The API uses JWT (JSON Web Tokens) for authentication. Here's how it works:
+
+1. **Registration/Login**: User provides credentials and receives a JWT token
+2. **Token Usage**: Include the token in the `Authorization` header for protected routes
+3. **Token Format**: `Authorization: Bearer <your-jwt-token>`
+
+### User Roles
+
+- **Customer** (`customer`): Can browse products, manage cart, place orders, write reviews
+- **Admin** (`admin`): All customer permissions plus product management, order management, user management
+
+### Protected Routes
+
+Most cart, order, and user management endpoints require authentication. Product browsing is public.
+
+---
+
+## Common Response Patterns
+
+All API responses follow consistent patterns for predictability:
+
+### Success Response
+```json
+{
+  "data": { /* actual response data */ },
+  "message": "Optional success message",
+  "timestamp": "2025-08-17T10:30:00.000Z",
+  "correlationId": "uuid-for-request-tracking"
+}
+```
+
+### Paginated Response
+```json
+{
+  "data": [/* array of items */],
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 150,
+    "totalPages": 15,
+    "hasNext": true,
+    "hasPrev": false
+  }
+}
+```
+
+### Error Response
+```json
+{
+  "error": {
+    "message": "Human-readable error message",
+    "code": "ERROR_CODE",
+    "details": "Additional error context",
+    "field": "specific field that caused error (for validation errors)"
+  },
+  "timestamp": "2025-08-17T10:30:00.000Z",
+  "correlationId": "uuid-for-request-tracking"
+}
+```
+
+---
+
+## Error Handling
+
+### HTTP Status Codes
+
+- **200**: Success
+- **201**: Created successfully
+- **204**: Success with no content
+- **400**: Bad request (validation errors, missing required fields)
+- **401**: Unauthorized (invalid or missing token)
+- **403**: Forbidden (insufficient permissions)
+- **404**: Resource not found
+- **409**: Conflict (duplicate email, insufficient stock)
+- **429**: Too many requests (rate limit exceeded)
+- **500**: Internal server error
+
+### Common Error Scenarios
+
+**Validation Error (400)**
+```json
+{
+  "error": {
+    "message": "Validation failed",
+    "code": "VALIDATION_ERROR",
+    "details": {
+      "email": "Invalid email format",
+      "password": "Password must be at least 8 characters"
+    }
+  }
+}
+```
+
+**Authentication Error (401)**
+```json
+{
+  "error": {
+    "message": "Invalid or expired token",
+    "code": "UNAUTHORIZED"
+  }
+}
+```
+
+**Resource Not Found (404)**
+```json
+{
+  "error": {
+    "message": "Product not found",
+    "code": "PRODUCT_NOT_FOUND"
+  }
+}
+```
+
+---
+
+## API Endpoints
+
+### Health Check
+
+#### GET `/health`
+**Purpose**: Check if the API is running and healthy  
+**Authentication**: None required  
+**Description**: Use this endpoint for monitoring, load balancers, and system health checks.
+
+**Response**:
+```json
+{
+  "status": "OK",
+  "message": "Server is running",
+  "timestamp": "2025-08-17T10:30:00.000Z",
+  "version": "1.0.0",
+  "uptime": 3600,
+  "database": "connected"
+}
+```
+
+#### GET `/health/readiness`
+**Purpose**: Check if the API is ready to serve requests  
+**Response**: Same as `/health` but includes database connectivity check
+
+#### GET `/health/liveness`
+**Purpose**: Check if the API process is alive  
+**Response**: Minimal response for Kubernetes liveness probes
+
+---
+
+### Authentication
+
+#### POST `/auth/register`
+**Purpose**: Create a new user account  
+**Authentication**: None required
+
+**Request Body**:
+```json
+{
+  "email": "customer@example.com",
+  "password": "securePassword123",
+  "name": "John Doe",
+  "role": "customer"  // optional, defaults to "customer"
+}
+```
+
+**Validation Rules**:
+- `email`: Must be valid email format, unique in system
+- `password`: Minimum 8 characters
+- `name`: Minimum 2 characters
+- `role`: Either "customer" or "admin" (admin registration may be restricted)
+
+**Success Response (201)**:
+```json
+{
+  "data": {
+    "user": {
+      "id": 1,
+      "email": "customer@example.com",
+      "name": "John Doe",
+      "role": "customer",
+      "createdAt": "2025-08-17T10:30:00.000Z"
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "expiresIn": "24h"
+  },
+  "message": "Account created successfully"
+}
+```
+
+#### POST `/auth/login`
+**Purpose**: Authenticate user and receive access token  
+**Authentication**: None required
+
+**Request Body**:
+```json
+{
+  "email": "customer@example.com",
+  "password": "securePassword123"
+}
+```
+
+**Success Response (200)**:
+```json
+{
+  "data": {
+    "user": {
+      "id": 1,
+      "email": "customer@example.com",
+      "name": "John Doe",
+      "role": "customer"
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "expiresIn": "24h"
+  },
+  "message": "Login successful"
+}
+```
+
+#### POST `/auth/forgot-password`
+**Purpose**: Initiate password reset process  
+**Authentication**: None required
+
+**Request Body**:
+```json
+{
+  "email": "customer@example.com"
+}
+```
+
+**Success Response (200)**:
+```json
+{
+  "message": "Password reset link sent if email exists."
+}
+```
+
+**Note**: For security, this endpoint always returns success even if email doesn't exist.
+
+#### POST `/auth/reset-password`
+**Purpose**: Complete password reset with token  
+**Authentication**: None required
+
+**Request Body**:
+```json
+{
+  "token": "reset-token-from-email",
+  "newPassword": "newSecurePassword123"
+}
+```
+
+**Success Response (200)**:
+```json
+{
+  "message": "Password has been reset."
+}
+```
+
+---
+
+### Products
+
+#### GET `/products`
+**Purpose**: Retrieve list of products with filtering and pagination  
+**Authentication**: None required (public endpoint)
+
+**Query Parameters**:
+- `page`: Page number (default: 1)
+- `limit`: Items per page (default: 10, max: 100)
+- `q`: Search query (searches name and description)
+- `category`: Category ID to filter by
+- `minPrice`: Minimum price filter
+- `maxPrice`: Maximum price filter
+
+**Example Request**:
+```
+GET /products?page=1&limit=12&q=solar&category=1&minPrice=100&maxPrice=1000
+```
+
+**Success Response (200)**:
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "High-Efficiency Solar Panel 400W",
+      "description": "Premium monocrystalline solar panel with 22% efficiency rating",
+      "price": 299.99,
+      "stock": 50,
+      "categoryId": 1,
+      "imageUrl": "https://example.com/images/solar-panel-400w.jpg",
+      "category": {
+        "id": 1,
+        "name": "Solar Panels",
+        "description": "Photovoltaic panels for solar energy generation"
+      },
+      "createdAt": "2025-08-17T10:30:00.000Z",
+      "updatedAt": "2025-08-17T10:30:00.000Z"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 12,
+    "total": 45,
+    "totalPages": 4,
+    "hasNext": true,
+    "hasPrev": false
+  }
+}
+```
+
+#### GET `/products/{id}`
+**Purpose**: Retrieve detailed information about a specific product  
+**Authentication**: None required
+
+**Path Parameters**:
+- `id`: Product ID (integer)
+
+**Success Response (200)**:
+```json
+{
+  "data": {
+    "id": 1,
+    "name": "High-Efficiency Solar Panel 400W",
+    "description": "Premium monocrystalline solar panel with 22% efficiency rating. Features anti-reflective coating and weather-resistant aluminum frame.",
+    "price": 299.99,
+    "stock": 50,
+    "categoryId": 1,
+    "imageUrl": "https://example.com/images/solar-panel-400w.jpg",
+    "category": {
+      "id": 1,
+      "name": "Solar Panels",
+      "description": "Photovoltaic panels for solar energy generation"
+    },
+    "specifications": {
+      "power": "400W",
+      "efficiency": "22%",
+      "voltage": "40V",
+      "dimensions": "2000x1000x40mm",
+      "weight": "22kg",
+      "warranty": "25 years"
+    },
+    "reviews": [
+      {
+        "id": 1,
+        "userId": 2,
+        "rating": 5,
+        "comment": "Excellent quality and performance",
+        "userName": "Jane Smith",
+        "createdAt": "2025-08-16T14:20:00.000Z"
+      }
+    ],
+    "averageRating": 4.8,
+    "reviewCount": 12,
+    "createdAt": "2025-08-17T10:30:00.000Z",
+    "updatedAt": "2025-08-17T10:30:00.000Z"
+  }
+}
+```
+
+#### POST `/products` (Admin Only)
+**Purpose**: Create a new product  
+**Authentication**: Required (Admin role)
+
+**Request Body**:
+```json
+{
+  "name": "New Solar Panel Model",
+  "description": "Advanced solar panel with improved efficiency",
+  "price": 349.99,
+  "stock": 100,
+  "categoryId": 1,
+  "imageUrl": "https://example.com/images/new-panel.jpg"
+}
+```
+
+**Success Response (201)**:
+```json
+{
+  "data": {
+    "id": 25,
+    "name": "New Solar Panel Model",
+    "description": "Advanced solar panel with improved efficiency",
+    "price": 349.99,
+    "stock": 100,
+    "categoryId": 1,
+    "imageUrl": "https://example.com/images/new-panel.jpg",
+    "createdAt": "2025-08-17T10:30:00.000Z",
+    "updatedAt": "2025-08-17T10:30:00.000Z"
+  },
+  "message": "Product created successfully"
+}
+```
+
+#### PUT `/products/{id}` (Admin Only)
+**Purpose**: Update an existing product  
+**Authentication**: Required (Admin role)
+
+**Request Body**: Same as POST but all fields are optional
+
+#### DELETE `/products/{id}` (Admin Only)
+**Purpose**: Delete a product  
+**Authentication**: Required (Admin role)  
+**Response**: 204 No Content
+
+---
+
+### Categories
+
+#### GET `/products/categories`
+**Purpose**: Retrieve all product categories  
+**Authentication**: None required
+
+**Success Response (200)**:
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "Solar Panels",
+      "description": "Photovoltaic panels for solar energy generation",
+      "productCount": 25,
+      "createdAt": "2025-08-17T10:30:00.000Z"
+    },
+    {
+      "id": 2,
+      "name": "Batteries",
+      "description": "Energy storage solutions",
+      "productCount": 18,
+      "createdAt": "2025-08-17T10:30:00.000Z"
+    },
+    {
+      "id": 3,
+      "name": "Inverters",
+      "description": "DC to AC power conversion systems",
+      "productCount": 12,
+      "createdAt": "2025-08-17T10:30:00.000Z"
+    }
+  ]
+}
+```
+
+---
+
+### Cart Management
+
+#### GET `/cart`
+**Purpose**: Retrieve current user's cart items  
+**Authentication**: Required
+
+**Success Response (200)**:
+```json
+{
+  "data": {
+    "items": [
+      {
+        "id": 1,
+        "userId": 1,
+        "productId": 1,
+        "quantity": 2,
+        "product": {
+          "id": 1,
+          "name": "High-Efficiency Solar Panel 400W",
+          "price": 299.99,
+          "imageUrl": "https://example.com/images/solar-panel-400w.jpg",
+          "stock": 50
+        },
+        "subtotal": 599.98,
+        "createdAt": "2025-08-17T10:30:00.000Z"
+      }
+    ],
+    "summary": {
+      "itemCount": 2,
+      "subtotal": 599.98,
+      "tax": 47.99,
+      "shipping": 0.00,
+      "total": 647.97
+    }
+  }
+}
+```
+
+#### POST `/cart/items`
+**Purpose**: Add item to cart  
+**Authentication**: Required
+
+**Request Body**:
+```json
+{
+  "productId": 1,
+  "quantity": 2
+}
+```
+
+**Success Response (201)**:
+```json
+{
+  "data": {
+    "id": 1,
+    "userId": 1,
+    "productId": 1,
+    "quantity": 2,
+    "product": {
+      "id": 1,
+      "name": "High-Efficiency Solar Panel 400W",
+      "price": 299.99,
+      "imageUrl": "https://example.com/images/solar-panel-400w.jpg"
+    },
+    "subtotal": 599.98,
+    "createdAt": "2025-08-17T10:30:00.000Z"
+  },
+  "message": "Item added to cart"
+}
+```
+
+#### PATCH `/cart/items/{productId}`
+**Purpose**: Update quantity of item in cart  
+**Authentication**: Required
+
+**Request Body**:
+```json
+{
+  "quantity": 3
+}
+```
+
+**Success Response (200)**:
+```json
+{
+  "data": {
+    "id": 1,
+    "userId": 1,
+    "productId": 1,
+    "quantity": 3,
+    "subtotal": 899.97,
+    "updatedAt": "2025-08-17T10:35:00.000Z"
+  },
+  "message": "Cart item updated"
+}
+```
+
+#### DELETE `/cart/items/{productId}`
+**Purpose**: Remove item from cart  
+**Authentication**: Required  
+**Response**: 200 with success confirmation
+
+#### DELETE `/cart/clear`
+**Purpose**: Remove all items from cart  
+**Authentication**: Required  
+**Response**: 204 No Content
+
+---
+
+### Orders
+
+#### GET `/orders/user/me`
+**Purpose**: Retrieve current user's order history  
+**Authentication**: Required
+
+**Success Response (200)**:
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "userId": 1,
+      "status": "delivered",
+      "total": 647.97,
+      "address": "123 Green Street, Eco City, EC 12345",
+      "items": [
+        {
+          "id": 1,
+          "productId": 1,
+          "quantity": 2,
+          "unitPrice": 299.99,
+          "totalPrice": 599.98,
+          "product": {
+            "id": 1,
+            "name": "High-Efficiency Solar Panel 400W",
+            "imageUrl": "https://example.com/images/solar-panel-400w.jpg"
+          }
+        }
+      ],
+      "tracking": {
+        "number": "TR123456789",
+        "status": "delivered",
+        "estimatedDelivery": "2025-08-20T00:00:00.000Z"
+      },
+      "createdAt": "2025-08-15T10:30:00.000Z",
+      "updatedAt": "2025-08-17T14:20:00.000Z"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 3,
+    "totalPages": 1
+  }
+}
+```
+
+#### GET `/orders/{id}`
+**Purpose**: Retrieve specific order details  
+**Authentication**: Required
+
+**Success Response (200)**:
+```json
+{
+  "data": {
+    "id": 1,
+    "userId": 1,
+    "status": "processing",
+    "total": 647.97,
+    "address": "123 Green Street, Eco City, EC 12345",
+    "items": [
+      {
+        "id": 1,
+        "productId": 1,
+        "quantity": 2,
+        "unitPrice": 299.99,
+        "totalPrice": 599.98,
+        "product": {
+          "id": 1,
+          "name": "High-Efficiency Solar Panel 400W",
+          "imageUrl": "https://example.com/images/solar-panel-400w.jpg"
+        }
+      }
+    ],
+    "billing": {
+      "subtotal": 599.98,
+      "tax": 47.99,
+      "shipping": 0.00,
+      "total": 647.97
+    },
+    "shipping": {
+      "address": "123 Green Street, Eco City, EC 12345",
+      "method": "standard",
+      "estimatedDelivery": "2025-08-22T00:00:00.000Z"
+    },
+    "payment": {
+      "method": "credit_card",
+      "status": "completed",
+      "transactionId": "txn_123456789"
+    },
+    "timeline": [
+      {
+        "status": "pending",
+        "timestamp": "2025-08-17T10:30:00.000Z",
+        "note": "Order placed"
+      },
+      {
+        "status": "processing",
+        "timestamp": "2025-08-17T11:00:00.000Z",
+        "note": "Payment confirmed, preparing for shipment"
+      }
+    ],
+    "createdAt": "2025-08-17T10:30:00.000Z",
+    "updatedAt": "2025-08-17T11:00:00.000Z"
+  }
+}
+```
+
+#### POST `/orders/{id}/confirm`
+**Purpose**: Confirm order and finalize purchase  
+**Authentication**: Required
+
+**Success Response (200)**:
+```json
+{
+  "data": {
+    "id": 1,
+    "status": "confirmed",
+    "message": "Order confirmed and payment processed"
+  }
+}
+```
+
+---
+
+### Checkout
+
+#### POST `/checkout`
+**Purpose**: Process checkout and create order from cart  
+**Authentication**: Required
+
+**Request Body**:
+```json
+{
+  "address": "123 Green Street, Eco City, EC 12345",
+  "paymentMethod": "credit_card",
+  "paymentDetails": {
+    "cardToken": "card_token_from_payment_processor"
+  },
+  "shippingMethod": "standard",
+  "notes": "Please handle with care"
+}
+```
+
+**Success Response (201)**:
+```json
+{
+  "data": {
+    "order": {
+      "id": 1,
+      "userId": 1,
+      "status": "pending",
+      "total": 647.97,
+      "address": "123 Green Street, Eco City, EC 12345",
+      "items": [
+        {
+          "id": 1,
+          "productId": 1,
+          "quantity": 2,
+          "unitPrice": 299.99,
+          "totalPrice": 599.98
+        }
+      ],
+      "createdAt": "2025-08-17T10:30:00.000Z"
+    },
+    "confirmation": true,
+    "paymentStatus": "pending",
+    "estimatedDelivery": "2025-08-22T00:00:00.000Z"
+  },
+  "message": "Order placed successfully"
+}
+```
+
+---
+
+### Reviews
+
+#### GET `/reviews`
+**Purpose**: Retrieve product reviews with filtering  
+**Authentication**: Required
+
+**Query Parameters**:
+- `productId`: Filter reviews for specific product
+- `userId`: Filter reviews by user
+- `rating`: Filter by rating (1-5)
+- `page`: Page number
+- `limit`: Items per page
+
+**Success Response (200)**:
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "userId": 2,
+      "productId": 1,
+      "rating": 5,
+      "title": "Excellent Quality",
+      "comment": "These solar panels exceeded my expectations. Great build quality and performance.",
+      "verified": true,
+      "helpful": 12,
+      "user": {
+        "id": 2,
+        "name": "Jane Smith"
+      },
+      "product": {
+        "id": 1,
+        "name": "High-Efficiency Solar Panel 400W"
+      },
+      "createdAt": "2025-08-16T14:20:00.000Z"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 25,
+    "totalPages": 3
+  }
+}
+```
+
+#### POST `/reviews`
+**Purpose**: Create a new product review  
+**Authentication**: Required
+
+**Request Body**:
+```json
+{
+  "productId": 1,
+  "rating": 5,
+  "title": "Excellent Quality",
+  "comment": "These solar panels exceeded my expectations. Great build quality and performance."
+}
+```
+
+**Success Response (201)**:
+```json
+{
+  "data": {
+    "id": 1,
+    "userId": 2,
+    "productId": 1,
+    "rating": 5,
+    "title": "Excellent Quality",
+    "comment": "These solar panels exceeded my expectations. Great build quality and performance.",
+    "verified": false,
+    "helpful": 0,
+    "createdAt": "2025-08-17T10:30:00.000Z"
+  },
+  "message": "Review submitted successfully"
+}
+```
+
+---
+
+### Discounts
+
+#### GET `/discounts`
+**Purpose**: Retrieve available discount codes (public promotional codes)  
+**Authentication**: None required
+
+**Success Response (200)**:
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "code": "SUMMER2025",
+      "description": "Summer Sale - 15% off all solar panels",
+      "type": "percentage",
+      "value": 15,
+      "minOrderAmount": 500,
+      "maxUses": 1000,
+      "usedCount": 156,
+      "startDate": "2025-06-01T00:00:00.000Z",
+      "endDate": "2025-08-31T23:59:59.000Z",
+      "isActive": true
+    }
+  ]
+}
+```
+
+#### POST `/discounts` (Admin Only)
+**Purpose**: Create new discount code  
+**Authentication**: Required (Admin role)
+
+**Request Body**:
+```json
+{
+  "code": "NEWCUSTOMER",
+  "description": "New customer discount",
+  "type": "percentage",
+  "value": 10,
+  "minOrderAmount": 100,
+  "maxUses": 500,
+  "startDate": "2025-08-17T00:00:00.000Z",
+  "endDate": "2025-12-31T23:59:59.000Z",
+  "isActive": true
+}
+```
+
+---
+
+## Data Models
+
+### User
+```typescript
+interface User {
+  id: number;
+  email: string;           // Unique, valid email format
+  name: string;           // Full name
+  role: 'customer' | 'admin';
+  createdAt: string;      // ISO 8601 timestamp
+  updatedAt: string;      // ISO 8601 timestamp
+}
+```
+
+### Product
+```typescript
+interface Product {
+  id: number;
+  name: string;           // Product name
+  description: string;    // Detailed description
+  price: number;          // Price in USD
+  stock: number;          // Available quantity
+  categoryId: number | null;
+  imageUrl: string | null;
+  category?: Category;    // Populated when requested
+  createdAt: string;
+  updatedAt: string;
+}
+```
+
+### Category
+```typescript
+interface Category {
+  id: number;
+  name: string;           // Unique category name
+  description?: string;   // Optional description
+  createdAt: string;
+  updatedAt: string;
+}
+```
+
+### CartItem
+```typescript
+interface CartItem {
+  id: number;
+  userId: number;
+  productId: number;
+  quantity: number;
+  product?: Product;      // Populated when requested
+  subtotal?: number;      // Calculated field
+  createdAt: string;
+  updatedAt: string;
+}
+```
+
+### Order
+```typescript
+interface Order {
+  id: number;
+  userId: number;
+  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  total: number;          // Total order amount
+  address: string;        // Shipping address
+  items?: OrderItem[];    // Order items
+  createdAt: string;
+  updatedAt: string;
+}
+```
+
+### OrderItem
+```typescript
+interface OrderItem {
+  id: number;
+  orderId: number;
+  productId: number;
+  quantity: number;
+  unitPrice: number;      // Price at time of order
+  totalPrice: number;     // quantity * unitPrice
+  product?: Product;      // Populated when requested
+}
+```
+
+---
+
+## Frontend Integration Guide
+
+### Setting Up API Client
+
+**Base Configuration**:
+```javascript
+const API_BASE_URL = 'http://localhost:4000/api/v1';
+
+// Create axios instance with base configuration
+const apiClient = axios.create({
+  baseURL: API_BASE_URL,
+  timeout: 30000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Add authentication interceptor
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem('authToken');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+```
+
+### Error Handling
+```javascript
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const errorMessage = error.response?.data?.error?.message || 'An error occurred';
+    
+    // Handle different error types
+    switch (error.response?.status) {
+      case 401:
+        // Redirect to login
+        localStorage.removeItem('authToken');
+        window.location.href = '/login';
+        break;
+      case 429:
+        // Rate limit exceeded
+        showNotification('Too many requests. Please try again later.', 'warning');
+        break;
+      default:
+        showNotification(errorMessage, 'error');
+    }
+    
+    return Promise.reject(error);
+  }
+);
+```
+
+### Authentication Flow
+```javascript
+// Login
+async function login(email, password) {
+  try {
+    const response = await apiClient.post('/auth/login', { email, password });
+    const { token, user } = response.data.data;
+    
+    localStorage.setItem('authToken', token);
+    localStorage.setItem('user', JSON.stringify(user));
+    
+    return { user, token };
+  } catch (error) {
+    throw new Error(error.response?.data?.error?.message || 'Login failed');
+  }
+}
+
+// Logout
+function logout() {
+  localStorage.removeItem('authToken');
+  localStorage.removeItem('user');
+  window.location.href = '/login';
+}
+```
+
+### Product Fetching with Pagination
+```javascript
+async function fetchProducts(filters = {}) {
+  try {
+    const params = new URLSearchParams();
+    
+    // Add filters to query params
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        params.append(key, value.toString());
+      }
+    });
+    
+    const response = await apiClient.get(`/products?${params}`);
+    return response.data;
+  } catch (error) {
+    throw new Error('Failed to fetch products');
+  }
+}
+
+// Usage
+const products = await fetchProducts({
+  page: 1,
+  limit: 12,
+  q: 'solar',
+  category: 1,
+  minPrice: 100,
+  maxPrice: 1000
+});
+```
+
+### Cart Management
+```javascript
+// Add to cart
+async function addToCart(productId, quantity) {
+  try {
+    const response = await apiClient.post('/cart/items', { productId, quantity });
+    return response.data.data;
+  } catch (error) {
+    if (error.response?.status === 409) {
+      throw new Error('Insufficient stock available');
+    }
+    throw new Error('Failed to add item to cart');
+  }
+}
+
+// Get cart
+async function getCart() {
+  try {
+    const response = await apiClient.get('/cart');
+    return response.data.data;
+  } catch (error) {
+    throw new Error('Failed to fetch cart');
+  }
+}
+
+// Update cart item
+async function updateCartItem(productId, quantity) {
+  try {
+    const response = await apiClient.patch(`/cart/items/${productId}`, { quantity });
+    return response.data.data;
+  } catch (error) {
+    throw new Error('Failed to update cart item');
+  }
+}
+```
+
+### Order Processing
+```javascript
+// Checkout
+async function checkout(checkoutData) {
+  try {
+    const response = await apiClient.post('/checkout', checkoutData);
+    return response.data.data;
+  } catch (error) {
+    if (error.response?.status === 400) {
+      throw new Error('Cart is empty or invalid checkout data');
+    }
+    throw new Error('Checkout failed');
+  }
+}
+
+// Get order history
+async function getOrderHistory(page = 1, limit = 10) {
+  try {
+    const response = await apiClient.get(`/orders/user/me?page=${page}&limit=${limit}`);
+    return response.data;
+  } catch (error) {
+    throw new Error('Failed to fetch order history');
+  }
+}
+```
+
+### State Management Recommendations
+
+**For React with Context API**:
+```javascript
+// AuthContext
+const AuthContext = createContext();
+
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    const userData = localStorage.getItem('user');
+    
+    if (token && userData) {
+      setUser(JSON.parse(userData));
+    }
+    setLoading(false);
+  }, []);
+
+  const login = async (email, password) => {
+    const { user, token } = await loginAPI(email, password);
+    setUser(user);
+    localStorage.setItem('authToken', token);
+    localStorage.setItem('user', JSON.stringify(user));
+  };
+
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('user');
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, login, logout, loading }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+```
+
+**For Redux Toolkit**:
+```javascript
+// Store setup
+import { configureStore } from '@reduxjs/toolkit';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+
+export const api = createApi({
+  reducerPath: 'api',
+  baseQuery: fetchBaseQuery({
+    baseUrl: 'http://localhost:4000/api/v1',
+    prepareHeaders: (headers, { getState }) => {
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        headers.set('authorization', `Bearer ${token}`);
+      }
+      return headers;
+    },
+  }),
+  tagTypes: ['Product', 'Cart', 'Order', 'User'],
+  endpoints: (builder) => ({
+    getProducts: builder.query({
+      query: (filters) => ({
+        url: '/products',
+        params: filters,
+      }),
+      providesTags: ['Product'],
+    }),
+    addToCart: builder.mutation({
+      query: ({ productId, quantity }) => ({
+        url: '/cart/items',
+        method: 'POST',
+        body: { productId, quantity },
+      }),
+      invalidatesTags: ['Cart'],
+    }),
+    // ... more endpoints
+  }),
+});
+```
+
+---
+
+## Testing & Validation
+
+### Health Check Testing
+```bash
+# Basic health check
+curl -X GET http://localhost:4000/api/v1/health
+
+# Detailed readiness check
+curl -X GET http://localhost:4000/api/v1/health/readiness
+```
+
+### Authentication Testing
+```bash
+# Register new user
+curl -X POST http://localhost:4000/api/v1/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "test@example.com",
+    "password": "password123",
+    "name": "Test User"
+  }'
+
+# Login
+curl -X POST http://localhost:4000/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "test@example.com",
+    "password": "password123"
+  }'
+```
+
+### Product API Testing
+```bash
+# Get products with filters
+curl -X GET "http://localhost:4000/api/v1/products?page=1&limit=10&q=solar"
+
+# Get specific product
+curl -X GET http://localhost:4000/api/v1/products/1
+```
+
+### Cart Testing (Requires Authentication)
+```bash
+# Add item to cart
+curl -X POST http://localhost:4000/api/v1/cart/items \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -d '{
+    "productId": 1,
+    "quantity": 2
+  }'
+
+# Get cart
+curl -X GET http://localhost:4000/api/v1/cart \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+---
+
+## Rate Limiting & Performance
+
+### Rate Limits
+- **Authentication endpoints**: 5 requests per minute per IP
+- **General API endpoints**: 100 requests per minute per IP
+- **Cart operations**: 20 requests per minute per authenticated user
+
+### Caching Recommendations
+- **Product catalog**: Cache for 5 minutes
+- **Categories**: Cache for 30 minutes
+- **User cart**: No caching (real-time data)
+- **Order history**: Cache for 1 minute
+
+### Performance Tips
+1. **Pagination**: Always use pagination for list endpoints
+2. **Selective fields**: Request only needed data
+3. **Batch operations**: Prefer batch operations when available
+4. **Connection pooling**: Reuse HTTP connections
+5. **Error handling**: Implement exponential backoff for retries
+
+---
+
+## Security Considerations
+
+### Authentication Security
+- JWT tokens expire after 24 hours
+- Implement token refresh mechanism
+- Store tokens securely (not in localStorage for production)
+- Validate all user inputs on frontend before sending
+
+### Data Protection
+- Never log sensitive data (passwords, tokens)
+- Validate file uploads if implementing image upload
+- Sanitize all user inputs to prevent XSS
+- Use HTTPS in production
+
+### API Security
+- CORS is configured for frontend domain
+- Rate limiting prevents abuse
+- All admin endpoints require proper authorization
+- SQL injection protection via Sequelize ORM
+
+---
+
+## Deployment & Environment Variables
+
+### Required Environment Variables
+```bash
+# Database
+DATABASE_URL=postgresql://user:password@localhost:5432/rivy_db
+
+# JWT
+JWT_SECRET=your-super-secret-jwt-key
+JWT_EXPIRY=24h
+
+# Server
+PORT=4000
+NODE_ENV=production
+
+# Email (for password reset)
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_USER=noreply@example.com
+SMTP_PASS=smtp-password
+
+# Frontend URL (for CORS)
+FRONTEND_URL=http://localhost:3000
+```
+
+### Production Deployment Checklist
+- [ ] Set NODE_ENV=production
+- [ ] Use strong JWT_SECRET
+- [ ] Configure proper CORS origins
+- [ ] Set up database connection pooling
+- [ ] Configure reverse proxy (nginx)
+- [ ] Set up SSL certificates
+- [ ] Configure monitoring and logging
+- [ ] Set up backup strategy
+- [ ] Configure rate limiting per environment
+
+---
+
+## Support & Troubleshooting
+
+### Common Issues
+
+**Authentication Errors**:
+- Verify JWT token format and expiry
+- Check Authorization header format: `Bearer <token>`
+- Ensure user has required permissions for admin endpoints
+
+**Product Fetching Issues**:
+- Verify query parameter formats
+- Check pagination limits (max 100 items per page)
+- Validate category IDs exist
+
+**Cart Problems**:
+- Ensure user is authenticated
+- Check product stock availability
+- Verify product IDs are valid
+
+**Order Issues**:
+- Ensure cart is not empty before checkout
+- Validate shipping address format
+- Check for sufficient product stock
+
+### Debug Information
+Each response includes a `correlationId` for request tracking. Include this ID when reporting issues.
+
+### Contact Information
+- **API Documentation**: Available at `/api/v1/docs`
+- **Backend Team**: backend-team@company.com
+- **Technical Support**: tech-support@company.com
+
+---
+
+**Document Version**: 1.0.0  
+**Last Updated**: August 17, 2025  
+**Next Review**: September 1, 2025
+
+This documentation serves as the authoritative guide for frontend integration with the Rivy Clean Energy Storefront API. It reflects 40 years of backend engineering experience, focusing on clarity, completeness, and practical implementation guidance.

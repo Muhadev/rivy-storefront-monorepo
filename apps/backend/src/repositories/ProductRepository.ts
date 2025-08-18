@@ -18,6 +18,7 @@ interface CreateProductData {
   stock: number;
   categoryId?: number;
   imageUrl?: string;
+  createdBy: number;
 }
 
 interface UpdateProductData {
@@ -30,22 +31,21 @@ interface UpdateProductData {
 }
 
 class ProductRepository {
-  static async getAll({ page, limit, search, category, minPrice, maxPrice }: ProductQuery) {
+  static async getAll({ page, limit, search, category, minPrice, maxPrice, createdBy }: ProductQuery & { createdBy?: number }) {
     const where: WhereOptions = {};
-    
+    if (createdBy) {
+      (where as any).createdBy = createdBy;
+    }
     if (search) {
       (where as any)[Op.or] = [
         { name: { [Op.iLike]: `%${search}%` } },
         { description: { [Op.iLike]: `%${search}%` } }
       ];
     }
-    
     if (category) where.categoryId = Number(category);
     if (minPrice) where.price = { [Op.gte]: minPrice };
     if (maxPrice) where.price = { ...where.price as any, [Op.lte]: maxPrice };
-    
     const offset = (page - 1) * limit;
-    
     const result = await Product.findAndCountAll({ 
       where, 
       limit, 
@@ -54,9 +54,8 @@ class ProductRepository {
         model: Category, 
         as: 'category'
       }],
-      order: [['name', 'ASC']]
+      order: [['createdAt', 'DESC']]
     });
-    
     return {
       products: result.rows,
       pagination: {
@@ -85,16 +84,18 @@ class ProductRepository {
     return product.get({ plain: true });
   }
 
-  static async update(id: number, data: UpdateProductData) {
+  static async update(id: number, data: UpdateProductData, userId: number) {
     const product = await Product.findByPk(id);
     if (!product) return null;
+    if (product.createdBy !== userId) return null;
     await product.update(data);
     return product.get({ plain: true });
   }
 
-  static async delete(id: number) {
+  static async delete(id: number, userId: number) {
     const product = await Product.findByPk(id);
     if (!product) return false;
+    if (product.createdBy !== userId) return false;
     await product.destroy();
     return true;
   }
