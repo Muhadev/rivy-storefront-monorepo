@@ -1,9 +1,10 @@
 {
   "info": {
-    "name": "Rivy Storefront API - Complete Collection",
-    "description": "Comprehensive API testing collection for Rivy fintech storefront backend. Includes authentication flows, product catalog, cart management, checkout simulation, and order processing.",
-    "version": "1.0.0",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    "_postman_id": "12345678-1234-1234-1234-123456789abc",
+    "name": "Rivy Storefront API v1.0",
+    "description": "# Rivy Storefront API Documentation\n\n## Overview\nComprehensive REST API for a modern e-commerce storefront platform built with enterprise-grade architecture. This collection provides complete testing coverage for all business operations including user management, product catalog, shopping cart, order processing, and administrative functions.\n\n## 🏗️ Architecture\n- **Framework**: Node.js + Express + TypeScript\n- **Database**: PostgreSQL with Sequelize ORM\n- **Authentication**: JWT Bearer Token\n- **Validation**: Zod schema validation\n- **Security**: Rate limiting, CORS, Input sanitization\n\n## 🔐 Authentication Model\n- **Customer Role**: Standard users with shopping privileges\n- **Admin Role**: Administrative users with management privileges\n- **Token Expiry**: 24 hours (configurable)\n\n## 📋 Prerequisites\n1. Backend server running on `http://localhost:4000`\n2. PostgreSQL database configured and migrated\n3. Environment variables properly set\n\n## 🧪 Testing Workflow\n1. **Authentication**: Register/Login to obtain access token\n2. **Product Management**: Browse catalog, search, filter products\n3. **Shopping Cart**: Add, modify, remove items\n4. **Checkout Process**: Create orders and process payments\n5. **Order Management**: Track order status and history\n6. **Administrative**: Manage products, users, and system settings\n\n## 📊 Response Format\nAll responses follow consistent JSON structure:\n```json\n{\n  \"success\": true,\n  \"data\": {...},\n  \"message\": \"Operation completed successfully\",\n  \"timestamp\": \"2025-08-15T10:30:00Z\"\n}\n```\n\n## ⚠️ Error Handling\nStandardized error responses with appropriate HTTP status codes:\n- `400`: Bad Request (validation errors)\n- `401`: Unauthorized (authentication required)\n- `403`: Forbidden (insufficient permissions)\n- `404`: Not Found (resource doesn't exist)\n- `429`: Too Many Requests (rate limit exceeded)\n- `500`: Internal Server Error\n\n---\n*Built by Senior Engineering Team | Version 1.0 | Last Updated: August 2025*",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
   },
   "auth": {
     "type": "bearer",
@@ -21,973 +22,1532 @@
       "script": {
         "type": "text/javascript",
         "exec": [
-          "// Global pre-request script for auth token management",
-          "if (pm.globals.get('authToken')) {",
-          "    pm.request.headers.add({",
-          "        key: 'Authorization',",
-          "        value: 'Bearer ' + pm.globals.get('authToken')",
-          "    });",
+          "// Global pre-request script for debugging",
+          "console.log('Making request to:', pm.request.url.toString());",
+          "if (pm.request.headers.get('Authorization')) {",
+          "    console.log('Using authentication token');",
+          "}"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Global test script for response validation",
+          "pm.test('Response time is acceptable', function () {",
+          "    pm.expect(pm.response.responseTime).to.be.below(5000);",
+          "});",
+          "",
+          "if (pm.response.code >= 400) {",
+          "    console.log('❌ Request failed with status:', pm.response.code);",
+          "    console.log('Error details:', pm.response.text());",
           "}"
         ]
       }
     }
   ],
+  "item": [
+    {
+      "name": " Authentication & User Management",
+      "description": "## Authentication & User Management\n\n### Overview\nSecure user authentication system supporting role-based access control with JWT tokens. Supports both customer and administrative user registration with different privilege levels.\n\n### Security Features\n- Password hashing with bcrypt (12 rounds)\n- JWT tokens with 24-hour expiration\n- Rate limiting on authentication endpoints\n- Input validation and sanitization\n- Secure password reset flow\n\n### User Roles\n- **Customer**: Standard shopping privileges, profile management\n- **Admin**: Full system access, product management, user oversight\n\n### Required Fields\n- **Email**: Valid email format, unique across system\n- **Password**: Minimum 8 characters, must contain letters and numbers\n- **Name**: Optional display name for user profile\n\n---",
+      "item": [
+        {
+          "name": "Customer Registration",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Comprehensive test suite for customer registration",
+                  "pm.test('Response status is 201 Created', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Response contains authentication token', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('token');",
+                  "    pm.expect(response.token).to.be.a('string');",
+                  "    pm.expect(response.token.length).to.be.greaterThan(0);",
+                  "});",
+                  "",
+                  "pm.test('User object contains required fields', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('user');",
+                  "    pm.expect(response.user).to.have.property('id');",
+                  "    pm.expect(response.user).to.have.property('email');",
+                  "    pm.expect(response.user).to.have.property('role');",
+                  "    pm.expect(response.user.role).to.equal('customer');",
+                  "});",
+                  "",
+                  "pm.test('Password is not exposed in response', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.user).to.not.have.property('password');",
+                  "});",
+                  "",
+                  "// Auto-save token for subsequent requests",
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('authToken', response.token);",
+                  "    pm.collectionVariables.set('userId', response.user.id);",
+                  "    console.log('✅ Customer registration successful - Token saved');",
+                  "} else {",
+                  "    console.log('❌ Registration failed - Check credentials');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "description": "Specify JSON content type for request body"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer@example.com\",\n  \"password\": \"securepass123\",\n  \"name\": \"John Customer\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            },
+            "description": "### 👤 Customer Registration\n\n**Purpose**: Creates a new customer account with standard shopping privileges.\n\n**Business Logic**:\n- Validates email uniqueness across the system\n- Encrypts password using bcrypt with salt rounds\n- Assigns 'customer' role automatically\n- Generates JWT token for immediate authentication\n- Creates user profile with provided information\n\n**Request Requirements**:\n- `email` (required): Valid email format, must be unique\n- `password` (required): Minimum 8 characters, alphanumeric\n- `name` (optional): Display name for user profile\n\n**Success Response** (201):\n```json\n{\n  \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n  \"user\": {\n    \"id\": 1,\n    \"email\": \"customer@example.com\",\n    \"name\": \"John Customer\",\n    \"role\": \"customer\",\n    \"createdAt\": \"2025-08-15T10:30:00Z\"\n  }\n}\n```\n\n**Common Errors**:\n- `400`: Email already exists, invalid email format, weak password\n- `429`: Too many registration attempts (rate limited)\n- `500`: Server error during account creation\n\n**Post-Registration**:\n- Token is automatically saved to collection variables\n- User can immediately access customer endpoints\n- Profile can be updated via user management endpoints\n\n---"
+          },
+          "response": []
+        },
+        {
+          "name": "🛡️ Admin Registration",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Comprehensive test suite for admin registration",
+                  "pm.test('Admin registration status is 201 Created', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Response contains admin authentication token', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('token');",
+                  "    pm.expect(response.token).to.be.a('string');",
+                  "});",
+                  "",
+                  "pm.test('Admin user has elevated privileges', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.user).to.have.property('role');",
+                  "    pm.expect(response.user.role).to.equal('admin');",
+                  "});",
+                  "",
+                  "pm.test('Admin profile includes management fields', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.user).to.have.property('id');",
+                  "    pm.expect(response.user).to.have.property('email');",
+                  "    pm.expect(response.user).to.not.have.property('password');",
+                  "});",
+                  "",
+                  "// Auto-save admin token for administrative operations",
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('adminToken', response.token);",
+                  "    pm.collectionVariables.set('adminId', response.user.id);",
+                  "    console.log('✅ Admin registration successful - Admin token saved');",
+                  "} else {",
+                  "    console.log('❌ Admin registration failed - Check credentials');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "description": "Specify JSON content type for request body"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"adminpass123\",\n  \"name\": \"System Administrator\",\n  \"role\": \"admin\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            },
+            "description": "### 🛡️ Admin Registration\n\n**Purpose**: Creates a new administrative account with full system privileges.\n\n**Business Logic**:\n- Creates user account with 'admin' role when role is specified\n- Grants access to administrative endpoints (product management, user oversight)\n- Applies same security measures as customer registration\n- Enables management of products, orders, and system settings\n\n**Request Requirements**:\n- `email` (required): Valid email format, must be unique\n- `password` (required): Minimum 8 characters, alphanumeric (recommend stronger for admin)\n- `name` (optional): Display name for admin profile\n- `role` (required): Must be set to \"admin\" for administrative privileges\n\n**Success Response** (201):\n```json\n{\n  \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n  \"user\": {\n    \"id\": 2,\n    \"email\": \"admin@example.com\",\n    \"name\": \"System Administrator\",\n    \"role\": \"admin\",\n    \"createdAt\": \"2025-08-15T10:35:00Z\"\n  }\n}\n```\n\n**Administrative Privileges**:\n- Product catalog management (create, update, delete products)\n- Category management\n- User account oversight\n- Order processing and fulfillment\n- System configuration access\n- Analytics and reporting\n\n**Security Considerations**:\n- Admin accounts should use strong, unique passwords\n- Consider implementing additional 2FA for production\n- Admin actions are logged for audit trails\n- Role cannot be changed after creation without database access\n\n**Common Errors**:\n- `400`: Invalid role specification, email conflicts\n- `403`: Admin registration may be restricted in production\n- `429`: Rate limiting on registration attempts\n\n---"
+          },
+          "response": []
+        },
+        {
+          "name": "🔑 User Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Comprehensive test suite for user login",
+                  "pm.test('Login successful with status 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Authentication token is provided', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('token');",
+                  "    pm.expect(response.token).to.be.a('string');",
+                  "    pm.expect(response.token.length).to.be.greaterThan(20);",
+                  "});",
+                  "",
+                  "pm.test('User profile data is returned', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('user');",
+                  "    pm.expect(response.user).to.have.property('id');",
+                  "    pm.expect(response.user).to.have.property('email');",
+                  "    pm.expect(response.user).to.have.property('role');",
+                  "});",
+                  "",
+                  "pm.test('Password is not exposed in login response', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.user).to.not.have.property('password');",
+                  "});",
+                  "",
+                  "pm.test('JWT token structure is valid', function () {",
+                  "    const response = pm.response.json();",
+                  "    const tokenParts = response.token.split('.');",
+                  "    pm.expect(tokenParts).to.have.lengthOf(3);",
+                  "});",
+                  "",
+                  "// Auto-save token for subsequent requests",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('authToken', response.token);",
+                  "    pm.collectionVariables.set('currentUserId', response.user.id);",
+                  "    pm.collectionVariables.set('currentUserRole', response.user.role);",
+                  "    console.log('✅ Login successful - Token saved for user:', response.user.email);",
+                  "    console.log('👤 User role:', response.user.role);",
+                  "} else {",
+                  "    console.log('❌ Login failed - Check credentials');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "description": "Specify JSON content type for request body"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer@example.com\",\n  \"password\": \"securepass123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "description": "### 🔑 User Login\n\n**Purpose**: Authenticates existing users and provides access token for protected resources.\n\n**Business Logic**:\n- Validates email and password against stored credentials\n- Uses bcrypt to verify password hash\n- Generates new JWT token upon successful authentication\n- Returns user profile data for session management\n- Rate limited to prevent brute force attacks\n\n**Request Requirements**:\n- `email` (required): Registered email address\n- `password` (required): User's password\n\n**Success Response** (200):\n```json\n{\n  \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJjdXN0b21lckBleGFtcGxlLmNvbSIsInJvbGUiOiJjdXN0b21lciIsImlhdCI6MTY5MjEwMjQwMCwiZXhwIjoxNjkyMTg4ODAwfQ.signature\",\n  \"user\": {\n    \"id\": 1,\n    \"email\": \"customer@example.com\",\n    \"name\": \"John Customer\",\n    \"role\": \"customer\",\n    \"createdAt\": \"2025-08-15T10:30:00Z\",\n    \"updatedAt\": \"2025-08-15T10:30:00Z\"\n  }\n}\n```\n\n**Token Information**:\n- **Type**: JWT (JSON Web Token)\n- **Expiration**: 24 hours from issue time\n- **Algorithm**: HS256\n- **Usage**: Include in Authorization header as `Bearer {token}`\n\n**Common Errors**:\n- `400`: Missing required fields, invalid email format\n- `401`: Invalid credentials (wrong email/password)\n- `429`: Too many login attempts (rate limited)\n- `500`: Server error during authentication\n\n**Security Features**:\n- Password verification using bcrypt\n- Rate limiting to prevent brute force attacks\n- Secure token generation with expiration\n- No password exposure in response\n\n**Post-Login Usage**:\n- Token is automatically saved to collection variables\n- All subsequent requests will use this token for authentication\n- Token provides access based on user role (customer/admin)\n\n---"
+          },
+          "response": []
+        },
+        {
+          "name": "🔒 Forgot Password",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test suite for password reset request",
+                  "pm.test('Password reset request status is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response contains success message', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('message');",
+                  "    pm.expect(response.message).to.include('reset');",
+                  "});",
+                  "",
+                  "pm.test('No sensitive information exposed', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.not.have.property('token');",
+                  "    pm.expect(response).to.not.have.property('user');",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    console.log('✅ Password reset email sent successfully');",
+                  "    console.log('📧 Check email for reset instructions');",
+                  "} else {",
+                  "    console.log('❌ Password reset failed');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "description": "Specify JSON content type for request body"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer@example.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/forgot-password",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "forgot-password"
+              ]
+            },
+            "description": "### 🔒 Forgot Password\n\n**Purpose**: Initiates password reset process for users who have forgotten their password.\n\n**Business Logic**:\n- Validates that email exists in the system\n- Generates secure password reset token with expiration\n- Sends password reset email with secure link (simulated in development)\n- Rate limited to prevent abuse\n- Always returns success message for security (doesn't reveal if email exists)\n\n**Request Requirements**:\n- `email` (required): Email address associated with the account\n\n**Success Response** (200):\n```json\n{\n  \"message\": \"If an account with that email exists, a password reset link has been sent.\"\n}\n```\n\n**Security Features**:\n- **Email Enumeration Protection**: Always returns success message\n- **Token Expiration**: Reset tokens expire in 1 hour\n- **Single Use Tokens**: Each token can only be used once\n- **Rate Limiting**: Prevents spam and abuse\n- **Secure Token Generation**: Cryptographically secure random tokens\n\n**Development Note**:\n- In development, the reset link is logged to console\n- In production, this would send an actual email\n- Reset tokens are stored temporarily in database\n\n**Reset Process Flow**:\n1. User requests password reset with email\n2. System generates secure token and sends email\n3. User clicks link in email (contains token)\n4. User submits new password with token\n5. System validates token and updates password\n\n**Common Errors**:\n- `400`: Invalid email format, missing email field\n- `429`: Too many reset requests (rate limited)\n- `500`: Server error during email generation\n\n**Next Steps**:\n- Check email for reset link (or console in development)\n- Use reset token with 'Reset Password' endpoint\n- Token expires in 1 hour for security\n\n---"
+          },
+          "response": []
+        },
+        {
+          "name": "🔄 Reset Password",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test suite for password reset completion",
+                  "pm.test('Password reset status is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response contains success message', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('message');",
+                  "    pm.expect(response.message).to.include('reset');",
+                  "});",
+                  "",
+                  "pm.test('No sensitive data in response', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.not.have.property('password');",
+                  "    pm.expect(response).to.not.have.property('token');",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    console.log('✅ Password reset completed successfully');",
+                  "    console.log('🔑 You can now login with the new password');",
+                  "} else {",
+                  "    console.log('❌ Password reset failed - Check token validity');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "description": "Specify JSON content type for request body"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"reset_token_from_email\",\n  \"newPassword\": \"newSecurePass123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/reset-password",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "reset-password"
+              ]
+            },
+            "description": "### 🔄 Reset Password\n\n**Purpose**: Completes the password reset process using a valid reset token.\n\n**Business Logic**:\n- Validates the password reset token\n- Checks token expiration (1 hour limit)\n- Ensures token hasn't been used previously\n- Updates user password with new bcrypt hash\n- Invalidates the reset token after use\n\n**Request Requirements**:\n- `token` (required): Password reset token from email\n- `newPassword` (required): New password (minimum 8 characters, alphanumeric)\n\n**Success Response** (200):\n```json\n{\n  \"message\": \"Password has been reset successfully. You can now login with your new password.\"\n}\n```\n\n**Security Features**:\n- **Token Validation**: Verifies token exists and is valid\n- **Expiration Check**: Tokens expire after 1 hour\n- **Single Use**: Each token can only be used once\n- **Password Hashing**: New password is hashed with bcrypt\n- **Token Cleanup**: Used tokens are immediately invalidated\n\n**Token Requirements**:\n- Must be obtained from 'Forgot Password' endpoint\n- Must be used within 1 hour of generation\n- Must not have been used previously\n- Format: JWT token with user ID and expiration\n\n**Password Requirements**:\n- Minimum 8 characters\n- Must contain letters and numbers\n- Same validation as registration\n\n**Common Errors**:\n- `400`: Invalid token format, weak password, missing fields\n- `401`: Token expired or already used\n- `404`: Token not found or invalid\n- `500`: Server error during password update\n\n**Post-Reset Process**:\n1. Password is successfully updated in database\n2. Reset token is invalidated\n3. User can immediately login with new password\n4. All existing sessions remain valid\n\n**Best Practices**:\n- Use token immediately after receiving email\n- Choose a strong, unique password\n- Login immediately to verify new password works\n\n---"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "📦 Product Catalog Management",
+      "description": "## Product Catalog Management\n\n### Overview\nComprehensive product management system supporting full CRUD operations, advanced search capabilities, and category-based organization. Designed for both customer browsing and administrative management.\n\n### Features\n- **Product Browsing**: Paginated product listing with search and filters\n- **Product Details**: Comprehensive product information with images and specifications\n- **Category Management**: Hierarchical product categorization\n- **Search & Filtering**: Advanced search by name, category, price range\n- **Admin Operations**: Product creation, updates, and deletion (admin only)\n\n### Access Control\n- **Public**: View products, search, filter (no authentication required)\n- **Customer**: Same as public (authenticated for cart operations)\n- **Admin**: Full CRUD operations, inventory management\n\n---",
+      "item": [
+        {
+          "name": "📋 List All Products",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Comprehensive test suite for product listing",
+                  "pm.test('Product listing status is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response contains product array', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('rows');",
+                  "    pm.expect(response.rows).to.be.an('array');",
+                  "});",
+                  "",
+                  "pm.test('Pagination metadata is present', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('count');",
+                  "    pm.expect(response).to.have.property('rows');",
+                  "    pm.expect(response.count).to.be.a('number');",
+                  "});",
+                  "",
+                  "pm.test('Product objects have required fields', function () {",
+                  "    const response = pm.response.json();",
+                  "    if (response.rows.length > 0) {",
+                  "        const product = response.rows[0];",
+                  "        pm.expect(product).to.have.property('id');",
+                  "        pm.expect(product).to.have.property('name');",
+                  "        pm.expect(product).to.have.property('price');",
+                  "        pm.expect(product).to.have.property('stock');",
+                  "    }",
+                  "});",
+                  "",
+                  "pm.test('Product prices are valid numbers', function () {",
+                  "    const response = pm.response.json();",
+                  "    response.rows.forEach(product => {",
+                  "        pm.expect(product.price).to.be.a('number');",
+                  "        pm.expect(product.price).to.be.greaterThan(0);",
+                  "    });",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    console.log('✅ Found', response.count, 'products');",
+                  "    if (response.rows.length > 0) {",
+                  "        pm.collectionVariables.set('productId', response.rows[0].id);",
+                  "        console.log('💾 Saved first product ID for testing:', response.rows[0].id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/products?page=1&limit=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number for pagination (starts from 1)"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Number of products per page (max 100)"
+                },
+                {
+                  "key": "q",
+                  "value": "",
+                  "description": "Search query for product name",
+                  "disabled": true
+                },
+                {
+                  "key": "categoryId",
+                  "value": "",
+                  "description": "Filter by category ID",
+                  "disabled": true
+                },
+                {
+                  "key": "minPrice",
+                  "value": "",
+                  "description": "Minimum price filter",
+                  "disabled": true
+                },
+                {
+                  "key": "maxPrice",
+                  "value": "",
+                  "description": "Maximum price filter",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "### 📋 List All Products\n\n**Purpose**: Retrieves paginated list of products with optional search and filtering capabilities.\n\n**Business Logic**:\n- Returns products in paginated format for optimal performance\n- Supports full-text search on product names\n- Enables filtering by category, price range\n- Includes product images, pricing, and availability\n- No authentication required (public endpoint)\n\n**Query Parameters**:\n- `page` (optional): Page number, defaults to 1\n- `limit` (optional): Items per page, defaults to 10, max 100\n- `q` (optional): Search term for product name\n- `categoryId` (optional): Filter by specific category\n- `minPrice` (optional): Minimum price filter\n- `maxPrice` (optional): Maximum price filter\n\n**Success Response** (200):\n```json\n{\n  \"count\": 25,\n  \"rows\": [\n    {\n      \"id\": 1,\n      \"name\": \"Premium Wireless Headphones\",\n      \"description\": \"High-quality wireless headphones with noise cancellation\",\n      \"price\": 299.99,\n      \"stock\": 15,\n      \"imageUrl\": \"https://example.com/headphones.jpg\",\n      \"categoryId\": 2,\n      \"category\": {\n        \"id\": 2,\n        \"name\": \"Electronics\"\n      },\n      \"createdAt\": \"2025-08-15T10:00:00Z\",\n      \"updatedAt\": \"2025-08-15T10:00:00Z\"\n    }\n  ]\n}\n```\n\n**Search & Filter Examples**:\n- Search: `?q=headphones`\n- Category: `?categoryId=2`\n- Price range: `?minPrice=100&maxPrice=500`\n- Combined: `?q=wireless&categoryId=2&minPrice=200&maxPrice=400&page=1&limit=20`\n\n**Performance Features**:\n- Database indexing on searchable fields\n- Efficient pagination with count optimization\n- Category joins for complete product information\n- Optimized queries to prevent N+1 problems\n\n**Use Cases**:\n- **Homepage**: Display featured products\n- **Catalog Page**: Browse all products with filters\n- **Search Results**: Find specific products\n- **Category Pages**: Products within specific categories\n\n**Response Performance**:\n- Typical response time: < 200ms\n- Cached category information\n- Optimized for mobile and web consumption\n\n---"
+          },
+          "response": []
+        },
+        {
+          "name": "🔍 Search Products",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test suite for product search",
+                  "pm.test('Search results status is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Search returns relevant results', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('rows');",
+                  "    pm.expect(response.rows).to.be.an('array');",
+                  "});",
+                  "",
+                  "pm.test('Search results contain query term', function () {",
+                  "    const response = pm.response.json();",
+                  "    const query = pm.request.url.query.get('q');",
+                  "    if (query && response.rows.length > 0) {",
+                  "        const firstProduct = response.rows[0];",
+                  "        pm.expect(firstProduct.name.toLowerCase()).to.include(query.toLowerCase());",
+                  "    }",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    console.log('🔍 Search found', response.count, 'products');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/products?q=laptop&page=1&limit=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "laptop",
+                  "description": "Search term for product name"
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number for pagination"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Number of results per page"
+                }
+              ]
+            },
+            "description": "### 🔍 Search Products\n\n**Purpose**: Performs full-text search across product catalog with advanced filtering options.\n\n**Business Logic**:\n- Searches product names using case-insensitive matching\n- Supports partial word matching and fuzzy search\n- Combines search with category and price filters\n- Returns paginated results for optimal performance\n- Highlights search relevance in results\n\n**Query Parameters**:\n- `q` (required): Search term for product names\n- `page` (optional): Page number, defaults to 1\n- `limit` (optional): Results per page, defaults to 10\n- `categoryId` (optional): Restrict search to specific category\n- `minPrice` & `maxPrice` (optional): Price range filters\n\n**Search Features**:\n- **Case Insensitive**: 'LAPTOP' matches 'laptop'\n- **Partial Matching**: 'lap' matches 'laptop'\n- **Multiple Terms**: 'wireless mouse' matches products with both words\n- **Category Filtering**: Search within specific categories\n- **Price Filtering**: Combine search with price ranges\n\n**Success Response** (200):\n```json\n{\n  \"count\": 8,\n  \"rows\": [\n    {\n      \"id\": 3,\n      \"name\": \"Gaming Laptop Pro\",\n      \"description\": \"High-performance gaming laptop with RTX graphics\",\n      \"price\": 1299.99,\n      \"stock\": 5,\n      \"relevanceScore\": 0.95,\n      \"category\": {\n        \"id\": 1,\n        \"name\": \"Computers\"\n      }\n    }\n  ]\n}\n```\n\n**Search Examples**:\n- Basic: `?q=laptop`\n- With category: `?q=gaming&categoryId=1`\n- With price range: `?q=wireless&minPrice=50&maxPrice=200`\n- Complex: `?q=bluetooth%20speaker&categoryId=2&minPrice=100&maxPrice=300&page=1&limit=5`\n\n**Performance Optimization**:\n- Database indexes on product names\n- Efficient LIKE queries with proper indexing\n- Result caching for popular search terms\n- Search analytics for improving relevance\n\n**Common Use Cases**:\n- **Product Discovery**: Users finding specific items\n- **Category Browsing**: Searching within categories\n- **Price Comparison**: Finding products in budget range\n- **Feature Search**: Looking for specific product features\n\n---"
+          },
+          "response": []
+        },
+        {
+          "name": "👁️ Get Product Details",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test suite for product details",
+                  "pm.test('Product details status is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Product object contains all fields', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('id');",
+                  "    pm.expect(response).to.have.property('name');",
+                  "    pm.expect(response).to.have.property('description');",
+                  "    pm.expect(response).to.have.property('price');",
+                  "    pm.expect(response).to.have.property('stock');",
+                  "    pm.expect(response).to.have.property('category');",
+                  "});",
+                  "",
+                  "pm.test('Category information is included', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.category).to.have.property('id');",
+                  "    pm.expect(response.category).to.have.property('name');",
+                  "});",
+                  "",
+                  "pm.test('Price is valid number', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.price).to.be.a('number');",
+                  "    pm.expect(response.price).to.be.greaterThan(0);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    console.log('✅ Product details loaded:', response.name);",
+                  "    console.log('💰 Price: $' + response.price);",
+                  "    console.log('📦 Stock: ' + response.stock + ' units');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/products/{{productId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products",
+                "{{productId}}"
+              ]
+            },
+            "description": "### 👁️ Get Product Details\n\n**Purpose**: Retrieves comprehensive information for a specific product including specifications, images, and availability.\n\n**Business Logic**:\n- Fetches complete product information by unique ID\n- Includes category details and related metadata\n- Provides real-time stock availability\n- Returns product images and specifications\n- No authentication required (public endpoint)\n\n**Path Parameters**:\n- `productId` (required): Unique identifier for the product\n\n**Success Response** (200):\n```json\n{\n  \"id\": 1,\n  \"name\": \"Premium Wireless Headphones\",\n  \"description\": \"Professional-grade wireless headphones with active noise cancellation, 30-hour battery life, and premium sound quality. Perfect for music enthusiasts and professionals.\",\n  \"price\": 299.99,\n  \"stock\": 15,\n  \"imageUrl\": \"https://example.com/products/headphones-premium.jpg\",\n  \"specifications\": {\n    \"brand\": \"AudioTech\",\n    \"color\": \"Matte Black\",\n    \"batteryLife\": \"30 hours\",\n    \"connectivity\": \"Bluetooth 5.0\",\n    \"features\": [\"Active Noise Cancellation\", \"Fast Charging\", \"Voice Assistant\"]\n  },\n  \"category\": {\n    \"id\": 2,\n    \"name\": \"Electronics\",\n    \"description\": \"Consumer electronics and gadgets\"\n  },\n  \"createdAt\": \"2025-08-15T10:00:00Z\",\n  \"updatedAt\": \"2025-08-15T10:00:00Z\"\n}\n```\n\n**Product Information Includes**:\n- **Basic Details**: Name, description, price, stock\n- **Images**: High-resolution product photos\n- **Specifications**: Technical details and features\n- **Category**: Product classification and category info\n- **Availability**: Real-time stock levels\n- **Metadata**: Creation and update timestamps\n\n**Common Errors**:\n- `404`: Product not found (invalid ID)\n- `500`: Server error retrieving product data\n\n**Use Cases**:\n- **Product Pages**: Detailed product information display\n- **Shopping Cart**: Verify product details before adding\n- **Inventory Check**: Real-time stock availability\n- **Price Comparison**: Current pricing information\n- **Product Specifications**: Technical details for comparison\n\n**Frontend Integration**:\n- Use for product detail pages\n- Real-time stock updates\n- Image gallery display\n- Specification tables\n- Add to cart functionality\n\n**Performance**:\n- Cached product data for faster loading\n- Optimized database queries\n- Image CDN integration\n- Mobile-optimized responses\n\n---"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🛒 Shopping Cart Management",
+      "description": "## Shopping Cart Management\n\n### Overview\nComprehensive shopping cart system supporting persistent cart storage, real-time inventory checking, and seamless checkout integration. Designed for optimal user experience across sessions.\n\n### Features\n- **Persistent Storage**: Cart contents saved across user sessions\n- **Real-time Updates**: Instant cart modifications with inventory validation\n- **Inventory Checking**: Automatic stock verification before operations\n- **Price Calculation**: Dynamic totals with tax and discount calculations\n- **Session Management**: User-specific cart isolation\n\n### Authentication\n- **Required**: All cart operations require valid authentication token\n- **User Isolation**: Each user has their own independent cart\n- **Session Persistence**: Cart survives login/logout cycles\n\n### Business Rules\n- Maximum quantity per item: 10 units\n- Stock validation on every cart operation\n- Automatic cart cleanup after 30 days of inactivity\n- Price updates reflect real-time product pricing\n\n---",
+      "item": [
+        {
+          "name": "➕ Add Item to Cart",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test suite for adding items to cart",
+                  "pm.test('Add to cart status is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Cart item contains required fields', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('id');",
+                  "    pm.expect(response).to.have.property('productId');",
+                  "    pm.expect(response).to.have.property('quantity');",
+                  "    pm.expect(response).to.have.property('price');",
+                  "});",
+                  "",
+                  "pm.test('Product information is included', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('product');",
+                  "    pm.expect(response.product).to.have.property('name');",
+                  "});",
+                  "",
+                  "pm.test('Quantity matches request', function () {",
+                  "    const response = pm.response.json();",
+                  "    const requestBody = JSON.parse(pm.request.body.raw);",
+                  "    pm.expect(response.quantity).to.equal(requestBody.quantity);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    console.log('✅ Added to cart:', response.product.name);",
+                  "    console.log('📦 Quantity:', response.quantity);",
+                  "    console.log('💰 Unit price: $' + response.price);",
+                  "    pm.collectionVariables.set('cartItemId', response.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": {{productId}},\n  \"quantity\": 2\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cart/items",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cart",
+                "items"
+              ]
+            },
+            "description": "### ➕ Add Item to Cart\n\n**Purpose**: Adds a product to the user's shopping cart with specified quantity and automatic inventory validation.\n\n**Authentication**: Required - Valid JWT token\n\n**Business Logic**:\n- Validates product exists and is available\n- Checks sufficient stock for requested quantity\n- Updates existing cart item if product already in cart\n- Calculates real-time pricing and totals\n- Enforces maximum quantity limits per item\n\n**Request Requirements**:\n- `productId` (required): Valid product identifier\n- `quantity` (required): Number of items (1-10)\n\n**Success Response** (201):\n```json\n{\n  \"id\": 15,\n  \"productId\": 1,\n  \"quantity\": 2,\n  \"price\": 299.99,\n  \"subtotal\": 599.98,\n  \"product\": {\n    \"id\": 1,\n    \"name\": \"Premium Wireless Headphones\",\n    \"imageUrl\": \"https://example.com/headphones.jpg\",\n    \"stock\": 13\n  },\n  \"addedAt\": \"2025-08-15T10:45:00Z\"\n}\n```\n\n**Inventory Validation**:\n- **Stock Check**: Verifies sufficient inventory\n- **Real-time Updates**: Stock levels checked at operation time\n- **Reservation**: Items temporarily reserved during checkout\n- **Availability**: Out-of-stock items cannot be added\n\n**Quantity Rules**:\n- **Minimum**: 1 item\n- **Maximum**: 10 items per product\n- **Stock Limit**: Cannot exceed available inventory\n- **Update Logic**: Adding existing product updates quantity\n\n**Common Errors**:\n- `400`: Invalid product ID, quantity out of range\n- `401`: Authentication required\n- `404`: Product not found\n- `409`: Insufficient stock available\n- `422`: Quantity exceeds maximum allowed per item\n\n**Business Features**:\n- **Price Locking**: Cart items maintain price at time of addition\n- **Inventory Alerts**: Notifications when stock becomes limited\n- **Quantity Limits**: Prevents overselling and inventory issues\n- **Cart Persistence**: Items saved across user sessions\n\n**Integration Points**:\n- **Product Catalog**: Real-time product and pricing data\n- **Inventory System**: Stock level validation\n- **User Management**: Cart isolation per user\n- **Checkout Process**: Seamless transition to order creation\n\n---"
+          },
+          "response": []
+        },
+        {
+          "name": "📋 View Cart Contents",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Cart view status is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Cart contains items array', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('items');",
+                  "    pm.expect(response.items).to.be.an('array');",
+                  "});",
+                  "",
+                  "pm.test('Cart totals are calculated', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('subtotal');",
+                  "    pm.expect(response).to.have.property('tax');",
+                  "    pm.expect(response).to.have.property('total');",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    console.log('🛒 Cart contains', response.items.length, 'items');",
+                  "    console.log('💰 Total: $' + response.total);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/cart",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cart"
+              ]
+            },
+            "description": "### 📋 View Cart Contents\n\n**Purpose**: Retrieves the complete cart contents with item details, quantities, and calculated totals.\n\n**Authentication**: Required - Valid JWT token\n\n**Business Logic**:\n- Displays all items currently in user's cart\n- Calculates subtotal, tax, and final total\n- Includes real-time product information\n- Shows current availability for each item\n- Applies any active discounts or promotions\n\n**Success Response** (200):\n```json\n{\n  \"items\": [\n    {\n      \"id\": 15,\n      \"productId\": 1,\n      \"quantity\": 2,\n      \"price\": 299.99,\n      \"subtotal\": 599.98,\n      \"product\": {\n        \"id\": 1,\n        \"name\": \"Premium Wireless Headphones\",\n        \"imageUrl\": \"https://example.com/headphones.jpg\",\n        \"stock\": 13\n      }\n    }\n  ],\n  \"summary\": {\n    \"itemCount\": 2,\n    \"subtotal\": 599.98,\n    \"tax\": 30.00,\n    \"shipping\": 0.00,\n    \"discount\": 0.00,\n    \"total\": 629.98\n  },\n  \"updatedAt\": \"2025-08-15T10:45:00Z\"\n}\n```\n\n**Cart Features**:\n- **Real-time Pricing**: Current product prices\n- **Stock Validation**: Available quantity for each item\n- **Tax Calculation**: Automatic tax computation\n- **Discount Application**: Active promotions applied\n- **Shipping Estimates**: Delivery cost calculations\n\n---"
+          },
+          "response": []
+        },
+        {
+          "name": "✏️ Update Cart Item",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Cart update status is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Updated quantity is correct', function () {",
+                  "    const response = pm.response.json();",
+                  "    const requestBody = JSON.parse(pm.request.body.raw);",
+                  "    pm.expect(response.quantity).to.equal(requestBody.quantity);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    console.log('✅ Cart item updated');",
+                  "    console.log('📦 New quantity:', response.quantity);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantity\": 3\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cart/items/{{cartItemId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cart",
+                "items",
+                "{{cartItemId}}"
+              ]
+            },
+            "description": "### ✏️ Update Cart Item\n\n**Purpose**: Modifies the quantity of an existing cart item with inventory validation.\n\n**Authentication**: Required - Valid JWT token\n\n**Path Parameters**:\n- `cartItemId` (required): ID of the cart item to update\n\n**Request Body**:\n- `quantity` (required): New quantity (1-10)\n\n**Business Logic**:\n- Validates new quantity against available stock\n- Updates cart item quantity and recalculates totals\n- Enforces quantity limits and business rules\n- Maintains product pricing and availability\n\n**Success Response** (200):\n```json\n{\n  \"id\": 15,\n  \"productId\": 1,\n  \"quantity\": 3,\n  \"price\": 299.99,\n  \"subtotal\": 899.97,\n  \"updatedAt\": \"2025-08-15T10:50:00Z\"\n}\n```\n\n---"
+          },
+          "response": []
+        },
+        {
+          "name": "🗑️ Remove Item from Cart",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Item removal status is 204', function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 204) {",
+                  "    console.log('✅ Item removed from cart successfully');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/cart/items/{{cartItemId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cart",
+                "items",
+                "{{cartItemId}}"
+              ]
+            },
+            "description": "### 🗑️ Remove Item from Cart\n\n**Purpose**: Completely removes a specific item from the user's shopping cart.\n\n**Authentication**: Required - Valid JWT token\n\n**Path Parameters**:\n- `cartItemId` (required): ID of the cart item to remove\n\n**Business Logic**:\n- Removes the specified cart item completely\n- Releases any inventory reservations\n- Recalculates cart totals automatically\n- Updates cart timestamps\n\n**Success Response** (204): No content - item successfully removed\n\n**Common Errors**:\n- `401`: Authentication required\n- `404`: Cart item not found or doesn't belong to user\n- `500`: Server error during removal\n\n---"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "📦 Order Management",
+      "description": "## Order Management\n\n### Overview\nComprehensive order processing system handling the complete order lifecycle from creation to fulfillment. Supports order tracking, status updates, and customer order history.\n\n### Order States\n- **Pending**: Order created, awaiting payment processing\n- **Processing**: Payment confirmed, preparing for shipment\n- **Shipped**: Order dispatched, tracking information available\n- **Delivered**: Order successfully delivered to customer\n- **Cancelled**: Order cancelled before shipment\n\n### Features\n- **Order Creation**: Convert cart contents to orders\n- **Status Tracking**: Real-time order status updates\n- **Order History**: Complete customer order records\n- **Inventory Management**: Automatic stock adjustments\n- **Payment Integration**: Simulated payment processing\n\n---",
+      "item": [
+        {
+          "name": "🛍️ Checkout Process",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Checkout status is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Order object is created', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('order');",
+                  "    pm.expect(response.order).to.have.property('id');",
+                  "    pm.expect(response.order).to.have.property('status');",
+                  "});",
+                  "",
+                  "pm.test('Order contains items', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.order).to.have.property('items');",
+                  "    pm.expect(response.order.items).to.be.an('array');",
+                  "});",
+                  "",
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('orderId', response.order.id);",
+                  "    console.log('✅ Order created successfully');",
+                  "    console.log('📋 Order ID:', response.order.id);",
+                  "    console.log('💰 Total: $' + response.order.total);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"address\": \"123 Main Street, City, State 12345\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/checkout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "checkout"
+              ]
+            },
+            "description": "### 🛍️ Checkout Process\n\n**Purpose**: Converts shopping cart contents into a confirmed order with payment processing simulation.\n\n**Authentication**: Required - Valid JWT token\n\n**Business Logic**:\n- Validates cart contents and inventory availability\n- Reserves inventory for ordered items\n- Calculates final totals including tax and shipping\n- Creates order record with 'pending' status\n- Clears the shopping cart after successful order creation\n- Simulates payment processing for demo purposes\n\n**Request Requirements**:\n- `address` (required): Shipping address for the order\n\n**Success Response** (201):\n```json\n{\n  \"order\": {\n    \"id\": 42,\n    \"status\": \"pending\",\n    \"total\": 629.98,\n    \"subtotal\": 599.98,\n    \"tax\": 30.00,\n    \"shipping\": 0.00,\n    \"address\": \"123 Main Street, City, State 12345\",\n    \"items\": [\n      {\n        \"id\": 1,\n        \"productId\": 1,\n        \"productName\": \"Premium Wireless Headphones\",\n        \"quantity\": 2,\n        \"price\": 299.99,\n        \"subtotal\": 599.98\n      }\n    ],\n    \"createdAt\": \"2025-08-15T11:00:00Z\",\n    \"estimatedDelivery\": \"2025-08-22T11:00:00Z\"\n  },\n  \"message\": \"Order created successfully. Payment processing initiated.\"\n}\n```\n\n**Checkout Process**:\n1. **Cart Validation**: Verify cart has items and stock availability\n2. **Inventory Reservation**: Reserve ordered quantities\n3. **Price Calculation**: Calculate totals with current pricing\n4. **Order Creation**: Generate order record with unique ID\n5. **Payment Simulation**: Process payment (demo mode)\n6. **Cart Cleanup**: Clear cart contents after successful order\n7. **Confirmation**: Send order confirmation details\n\n---"
+          },
+          "response": []
+        },
+        {
+          "name": "📋 Get Order Details",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Order details status is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Order contains required information', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('id');",
+                  "    pm.expect(response).to.have.property('status');",
+                  "    pm.expect(response).to.have.property('items');",
+                  "    pm.expect(response).to.have.property('total');",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    console.log('📋 Order ID:', response.id);",
+                  "    console.log('📊 Status:', response.status);",
+                  "    console.log('💰 Total: $' + response.total);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/orders/{{orderId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders",
+                "{{orderId}}"
+              ]
+            },
+            "description": "### 📋 Get Order Details\n\n**Purpose**: Retrieves comprehensive information for a specific order including items, status, and tracking details.\n\n**Authentication**: Required - Valid JWT token\n\n**Authorization**: Users can only access their own orders\n\n**Path Parameters**:\n- `orderId` (required): Unique identifier for the order\n\n**Success Response** (200):\n```json\n{\n  \"id\": 42,\n  \"status\": \"processing\",\n  \"total\": 629.98,\n  \"subtotal\": 599.98,\n  \"tax\": 30.00,\n  \"shipping\": 0.00,\n  \"address\": \"123 Main Street, City, State 12345\",\n  \"items\": [\n    {\n      \"id\": 1,\n      \"productId\": 1,\n      \"productName\": \"Premium Wireless Headphones\",\n      \"quantity\": 2,\n      \"price\": 299.99,\n      \"subtotal\": 599.98,\n      \"product\": {\n        \"imageUrl\": \"https://example.com/headphones.jpg\"\n      }\n    }\n  ],\n  \"createdAt\": \"2025-08-15T11:00:00Z\",\n  \"updatedAt\": \"2025-08-15T11:15:00Z\",\n  \"estimatedDelivery\": \"2025-08-22T11:00:00Z\",\n  \"trackingNumber\": \"TRK123456789\"\n}\n```\n\n---"
+          },
+          "response": []
+        },
+        {
+          "name": "📝 List User Orders",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Orders list status is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response contains orders array', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('orders');",
+                  "    pm.expect(response.orders).to.be.an('array');",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    console.log('📦 Found', response.orders.length, 'orders');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/orders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders"
+              ]
+            },
+            "description": "### 📝 List User Orders\n\n**Purpose**: Retrieves paginated list of all orders for the authenticated user.\n\n**Authentication**: Required - Valid JWT token\n\n**Authorization**: Users see only their own orders\n\n**Success Response** (200):\n```json\n{\n  \"orders\": [\n    {\n      \"id\": 42,\n      \"status\": \"processing\",\n      \"total\": 629.98,\n      \"itemCount\": 2,\n      \"createdAt\": \"2025-08-15T11:00:00Z\",\n      \"estimatedDelivery\": \"2025-08-22T11:00:00Z\"\n    }\n  ],\n  \"pagination\": {\n    \"page\": 1,\n    \"limit\": 10,\n    \"total\": 1\n  }\n}\n```\n\n---"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "👤 User Profile Management",
+      "description": "## User Profile Management\n\n### Overview\nUser profile management system allowing customers to view and update their personal information, manage account settings, and handle account lifecycle operations.\n\n### Features\n- **Profile Viewing**: Access current user information\n- **Profile Updates**: Modify name, email, and other details\n- **Account Security**: Password management and security settings\n- **Account Deletion**: Self-service account closure\n\n---",
+      "item": [
+        {
+          "name": "👁️ Get User Profile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Profile status is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Profile contains user data', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('id');",
+                  "    pm.expect(response).to.have.property('email');",
+                  "    pm.expect(response).to.have.property('role');",
+                  "});",
+                  "",
+                  "pm.test('Password is not exposed', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.not.have.property('password');",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    console.log('👤 User:', response.email);",
+                  "    console.log('🎭 Role:', response.role);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "me"
+              ]
+            },
+            "description": "### 👁️ Get User Profile\n\n**Purpose**: Retrieves the current user's profile information and account details.\n\n**Authentication**: Required - Valid JWT token\n\n**Success Response** (200):\n```json\n{\n  \"id\": 1,\n  \"email\": \"customer@example.com\",\n  \"name\": \"John Customer\",\n  \"role\": \"customer\",\n  \"createdAt\": \"2025-08-15T10:30:00Z\",\n  \"updatedAt\": \"2025-08-15T10:30:00Z\"\n}\n```\n\n---"
+          },
+          "response": []
+        },
+        {
+          "name": "✏️ Update User Profile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Profile update status is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Updated fields are reflected', function () {",
+                  "    const response = pm.response.json();",
+                  "    const requestBody = JSON.parse(pm.request.body.raw);",
+                  "    if (requestBody.name) {",
+                  "        pm.expect(response.name).to.equal(requestBody.name);",
+                  "    }",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    console.log('✅ Profile updated successfully');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Updated Customer\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "me"
+              ]
+            },
+            "description": "### ✏️ Update User Profile\n\n**Purpose**: Updates the current user's profile information with new details.\n\n**Authentication**: Required - Valid JWT token\n\n**Request Body** (optional fields):\n- `name`: Display name for the user\n- `email`: Email address (must be unique)\n\n**Success Response** (200):\n```json\n{\n  \"id\": 1,\n  \"email\": \"customer@example.com\",\n  \"name\": \"John Updated Customer\",\n  \"role\": \"customer\",\n  \"updatedAt\": \"2025-08-15T11:30:00Z\"\n}\n```\n\n---"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🛡️ Admin Operations",
+      "description": "## Admin Operations\n\n### Overview\nAdministrative endpoints for system management, product catalog administration, and user oversight. Restricted to users with admin role.\n\n### Access Control\n- **Admin Only**: All endpoints require admin role\n- **JWT Authentication**: Valid admin token required\n- **Audit Logging**: All admin actions are logged\n\n### Features\n- **Product Management**: Create, update, delete products\n- **Category Management**: Organize product categories\n- **User Management**: Oversee user accounts\n- **System Analytics**: Access system metrics and reports\n\n---",
+      "item": [
+        {
+          "name": "➕ Create Product (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Product creation status is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Created product contains required fields', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('id');",
+                  "    pm.expect(response).to.have.property('name');",
+                  "    pm.expect(response).to.have.property('price');",
+                  "});",
+                  "",
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    console.log('✅ Product created:', response.name);",
+                  "    console.log('🆔 Product ID:', response.id);",
+                  "    pm.collectionVariables.set('newProductId', response.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"New Gaming Mouse\",\n  \"description\": \"High-precision gaming mouse with RGB lighting\",\n  \"price\": 79.99,\n  \"stock\": 50,\n  \"categoryId\": 2,\n  \"imageUrl\": \"https://example.com/gaming-mouse.jpg\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products"
+              ]
+            },
+            "description": "### ➕ Create Product (Admin)\n\n**Purpose**: Creates a new product in the catalog with full product information.\n\n**Authentication**: Required - Valid admin JWT token\n**Authorization**: Admin role required\n\n**Request Requirements**:\n- `name` (required): Product name\n- `description` (required): Product description\n- `price` (required): Product price (positive number)\n- `stock` (required): Initial inventory count\n- `categoryId` (required): Valid category ID\n- `imageUrl` (optional): Product image URL\n\n**Success Response** (201):\n```json\n{\n  \"id\": 6,\n  \"name\": \"New Gaming Mouse\",\n  \"description\": \"High-precision gaming mouse with RGB lighting\",\n  \"price\": 79.99,\n  \"stock\": 50,\n  \"categoryId\": 2,\n  \"imageUrl\": \"https://example.com/gaming-mouse.jpg\",\n  \"createdAt\": \"2025-08-15T12:00:00Z\",\n  \"updatedAt\": \"2025-08-15T12:00:00Z\"\n}\n```\n\n---"
+          },
+          "response": []
+        },
+        {
+          "name": "✏️ Update Product (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Product update status is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    console.log('✅ Product updated successfully');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Gaming Mouse Pro\",\n  \"price\": 89.99,\n  \"stock\": 45\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/products/{{newProductId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products",
+                "{{newProductId}}"
+              ]
+            },
+            "description": "### ✏️ Update Product (Admin)\n\n**Purpose**: Updates existing product information including pricing, inventory, and details.\n\n**Authentication**: Required - Valid admin JWT token\n**Authorization**: Admin role required\n\n**Path Parameters**:\n- `productId` (required): ID of the product to update\n\n**Request Body** (all fields optional):\n- `name`: Updated product name\n- `description`: Updated description\n- `price`: New price\n- `stock`: Updated inventory count\n- `categoryId`: New category assignment\n- `imageUrl`: Updated image URL\n\n---"
+          },
+          "response": []
+        },
+        {
+          "name": "🗑️ Delete Product (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Product deletion status is 204', function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 204) {",
+                  "    console.log('✅ Product deleted successfully');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/products/{{newProductId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products",
+                "{{newProductId}}"
+              ]
+            },
+            "description": "### 🗑️ Delete Product (Admin)\n\n**Purpose**: Permanently removes a product from the catalog.\n\n**Authentication**: Required - Valid admin JWT token\n**Authorization**: Admin role required\n\n**Path Parameters**:\n- `productId` (required): ID of the product to delete\n\n**Success Response** (204): No content - product successfully deleted\n\n**Important Notes**:\n- This action is irreversible\n- Products in active orders cannot be deleted\n- Consider deactivating instead of deleting\n\n---"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🏥 System Health & Utilities",
+      "description": "## System Health & Utilities\n\n### Overview\nSystem monitoring, health checks, and utility endpoints for application status verification and debugging.\n\n### Features\n- **Health Monitoring**: API availability and database connectivity\n- **API Documentation**: OpenAPI specification access\n- **System Status**: Real-time system metrics\n\n---",
+      "item": [
+        {
+          "name": "💓 Health Check",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Health check status is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('System is healthy', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('status', 'ok');",
+                  "});",
+                  "",
+                  "pm.test('Database is connected', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.database).to.equal('connected');",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    console.log('✅ System is healthy');",
+                  "    console.log('🕐 Uptime:', pm.response.json().uptime);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            },
+            "description": "### 💓 Health Check\n\n**Purpose**: Verifies API availability, database connectivity, and overall system health.\n\n**Authentication**: None required (public endpoint)\n\n**Success Response** (200):\n```json\n{\n  \"status\": \"ok\",\n  \"timestamp\": \"2025-08-15T12:30:00Z\",\n  \"uptime\": \"2h 15m 30s\",\n  \"database\": \"connected\",\n  \"version\": \"1.0.0\",\n  \"environment\": \"development\"\n}\n```\n\n**Use Cases**:\n- **Load Balancer**: Health check endpoint\n- **Monitoring**: System availability verification\n- **Debugging**: Quick system status verification\n- **DevOps**: Automated health monitoring\n\n---"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
   "variable": [
     {
       "key": "baseUrl",
-      "value": "{{baseUrl}}",
+      "value": "http://localhost:4000/api/v1",
       "type": "string"
     },
     {
       "key": "authToken",
       "value": "",
       "type": "string"
-    }
-  ],
-  "item": [
-    {
-      "name": "Health Check",
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test('Health check returns 200', function () {",
-              "    pm.response.to.have.status(200);",
-              "});",
-              "",
-              "pm.test('Service is healthy', function () {",
-              "    const responseJson = pm.response.json();",
-              "    pm.expect(responseJson.ok).to.be.true;",
-              "    pm.expect(responseJson.service).to.eql('backend');",
-              "});"
-            ]
-          }
-        }
-      ],
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/api/v1/health",
-          "host": ["{{baseUrl}}"],
-          "path": ["api", "v1", "health"]
-        }
-      }
     },
     {
-      "name": "Authentication",
-      "item": [
-        {
-          "name": "Register User",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('User registration successful', function () {",
-                  "    pm.response.to.have.status(201);",
-                  "});",
-                  "",
-                  "pm.test('Response contains user data', function () {",
-                  "    const responseJson = pm.response.json();",
-                  "    pm.expect(responseJson).to.have.property('user');",
-                  "    pm.expect(responseJson).to.have.property('token');",
-                  "    pm.globals.set('authToken', responseJson.token);",
-                  "    pm.globals.set('userId', responseJson.user.id);",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"testuser@example.com\",\n  \"password\": \"securepass123\",\n  \"role\": \"customer\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/auth/register",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "auth", "register"]
-            }
-          }
-        },
-        {
-          "name": "Login User",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Login successful', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "pm.test('Token received', function () {",
-                  "    const responseJson = pm.response.json();",
-                  "    pm.expect(responseJson).to.have.property('token');",
-                  "    pm.globals.set('authToken', responseJson.token);",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"testuser@example.com\",\n  \"password\": \"securepass123\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/auth/login",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "auth", "login"]
-            }
-          }
-        },
-        {
-          "name": "Get Current User Profile",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Profile retrieved successfully', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "pm.test('User data is complete', function () {",
-                  "    const responseJson = pm.response.json();",
-                  "    pm.expect(responseJson).to.have.property('id');",
-                  "    pm.expect(responseJson).to.have.property('email');",
-                  "    pm.expect(responseJson).to.have.property('name');",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/auth/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "auth", "me"]
-            }
-          }
-        }
-      ]
+      "key": "adminToken",
+      "value": "",
+      "type": "string"
     },
     {
-      "name": "Products",
-      "item": [
-        {
-          "name": "List Products",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Products listed successfully', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "pm.test('Response is array of products', function () {",
-                  "    const responseJson = pm.response.json();",
-                  "    pm.expect(responseJson).to.be.an('array');",
-                  "    if (responseJson.length > 0) {",
-                  "        pm.globals.set('productId', responseJson[0].id);",
-                  "    }",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/products?page=1&limit=10",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "products"],
-              "query": [
-                {
-                  "key": "page",
-                  "value": "1"
-                },
-                {
-                  "key": "limit",
-                  "value": "10"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Search Products",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Search successful', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "pm.test('Search results relevant', function () {",
-                  "    const responseJson = pm.response.json();",
-                  "    pm.expect(responseJson).to.be.an('array');",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/products?q=solar&minPrice=100&maxPrice=1000",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "products"],
-              "query": [
-                {
-                  "key": "q",
-                  "value": "solar"
-                },
-                {
-                  "key": "minPrice",
-                  "value": "100"
-                },
-                {
-                  "key": "maxPrice",
-                  "value": "1000"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Get Product Details",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Product details retrieved', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "pm.test('Product has required fields', function () {",
-                  "    const responseJson = pm.response.json();",
-                  "    pm.expect(responseJson).to.have.property('id');",
-                  "    pm.expect(responseJson).to.have.property('name');",
-                  "    pm.expect(responseJson).to.have.property('price');",
-                  "    pm.expect(responseJson).to.have.property('stock');",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/products/{{productId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "products", "{{productId}}"]
-            }
-          }
-        },
-        {
-          "name": "Create Product (Admin)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Product created successfully', function () {",
-                  "    pm.response.to.have.status(201);",
-                  "});",
-                  "",
-                  "pm.test('Created product has ID', function () {",
-                  "    const responseJson = pm.response.json();",
-                  "    pm.expect(responseJson).to.have.property('id');",
-                  "    pm.globals.set('newProductId', responseJson.id);",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Test Solar Panel\",\n  \"description\": \"High-efficiency solar panel for residential use\",\n  \"price\": 299.99,\n  \"stock\": 50,\n  \"categoryId\": 1,\n  \"imageUrl\": \"https://example.com/solar-panel.jpg\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/products",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "products"]
-            }
-          }
-        }
-      ]
+      "key": "userId",
+      "value": "",
+      "type": "string"
     },
     {
-      "name": "Cart Management",
-      "item": [
-        {
-          "name": "Add Item to Cart",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Item added to cart', function () {",
-                  "    pm.response.to.have.status(201);",
-                  "});",
-                  "",
-                  "pm.test('Cart item created', function () {",
-                  "    const responseJson = pm.response.json();",
-                  "    pm.expect(responseJson).to.have.property('id');",
-                  "    pm.expect(responseJson).to.have.property('quantity');",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"productId\": {{productId}},\n  \"quantity\": 2\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/cart/items",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "cart", "items"]
-            }
-          }
-        },
-        {
-          "name": "Get Cart Items",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Cart retrieved successfully', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "pm.test('Cart contains items', function () {",
-                  "    const responseJson = pm.response.json();",
-                  "    pm.expect(responseJson).to.be.an('array');",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/cart/items",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "cart", "items"]
-            }
-          }
-        },
-        {
-          "name": "Update Cart Item Quantity",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Cart item updated', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "pm.test('Quantity updated correctly', function () {",
-                  "    const responseJson = pm.response.json();",
-                  "    pm.expect(responseJson.quantity).to.eql(3);",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"productId\": {{productId}},\n  \"quantity\": 3\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/cart/items",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "cart", "items"]
-            }
-          }
-        },
-        {
-          "name": "Remove Cart Item",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Cart item removed', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "DELETE",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/cart/items/{{productId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "cart", "items", "{{productId}}"]
-            }
-          }
-        }
-      ]
+      "key": "adminId",
+      "value": "",
+      "type": "string"
     },
     {
-      "name": "Checkout & Orders",
-      "item": [
-        {
-          "name": "Simulate Checkout",
-          "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "exec": [
-                  "// Add item to cart before checkout",
-                  "pm.sendRequest({",
-                  "    url: pm.globals.get('baseUrl') + '/api/v1/cart/items',",
-                  "    method: 'POST',",
-                  "    header: {",
-                  "        'Content-Type': 'application/json',",
-                  "        'Authorization': 'Bearer ' + pm.globals.get('authToken')",
-                  "    },",
-                  "    body: {",
-                  "        mode: 'raw',",
-                  "        raw: JSON.stringify({",
-                  "            productId: parseInt(pm.globals.get('productId')),",
-                  "            quantity: 1",
-                  "        })",
-                  "    }",
-                  "}, function(err, res) {",
-                  "    console.log('Pre-checkout cart setup completed');",
-                  "});"
-                ]
-              }
-            },
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Checkout successful', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "pm.test('Order created', function () {",
-                  "    const responseJson = pm.response.json();",
-                  "    pm.expect(responseJson.order).to.have.property('id');",
-                  "    pm.expect(responseJson.order).to.have.property('total');",
-                  "    pm.globals.set('orderId', responseJson.order.id);",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"paymentMethod\": \"credit_card\",\n  \"shippingAddress\": {\n    \"street\": \"123 Solar St\",\n    \"city\": \"Green City\",\n    \"state\": \"CA\",\n    \"zipCode\": \"90210\",\n    \"country\": \"USA\"\n  }\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/checkout",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "checkout"]
-            }
-          }
-        },
-        {
-          "name": "Get User Orders",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Orders retrieved successfully', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "pm.test('Orders array returned', function () {",
-                  "    const responseJson = pm.response.json();",
-                  "    pm.expect(responseJson).to.be.an('array');",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/orders",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "orders"]
-            }
-          }
-        },
-        {
-          "name": "Get Order Details",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Order details retrieved', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "pm.test('Order has complete data', function () {",
-                  "    const responseJson = pm.response.json();",
-                  "    pm.expect(responseJson).to.have.property('id');",
-                  "    pm.expect(responseJson).to.have.property('total');",
-                  "    pm.expect(responseJson).to.have.property('status');",
-                  "    pm.expect(responseJson).to.have.property('items');",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/orders/{{orderId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "orders", "{{orderId}}"]
-            }
-          }
-        }
-      ]
+      "key": "productId",
+      "value": "",
+      "type": "string"
     },
     {
-      "name": "Reviews & Ratings",
-      "item": [
-        {
-          "name": "Create Product Review",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Review created successfully', function () {",
-                  "    pm.response.to.have.status(201);",
-                  "});",
-                  "",
-                  "pm.test('Review has required fields', function () {",
-                  "    const responseJson = pm.response.json();",
-                  "    pm.expect(responseJson).to.have.property('id');",
-                  "    pm.expect(responseJson).to.have.property('rating');",
-                  "    pm.globals.set('reviewId', responseJson.id);",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"productId\": {{productId}},\n  \"rating\": 5,\n  \"comment\": \"Excellent solar panel, highly recommend for residential use!\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/reviews",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "reviews"]
-            }
-          }
-        },
-        {
-          "name": "Get Product Reviews",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Reviews retrieved successfully', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "pm.test('Reviews array returned', function () {",
-                  "    const responseJson = pm.response.json();",
-                  "    pm.expect(responseJson).to.be.an('array');",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/reviews?productId={{productId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "reviews"],
-              "query": [
-                {
-                  "key": "productId",
-                  "value": "{{productId}}"
-                }
-              ]
-            }
-          }
-        }
-      ]
+      "key": "orderId",
+      "value": "",
+      "type": "string"
     },
     {
-      "name": "Discounts & Promotions",
-      "item": [
-        {
-          "name": "Create Discount Code (Admin)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Discount created successfully', function () {",
-                  "    pm.response.to.have.status(201);",
-                  "});",
-                  "",
-                  "pm.test('Discount has code', function () {",
-                  "    const responseJson = pm.response.json();",
-                  "    pm.expect(responseJson).to.have.property('code');",
-                  "    pm.globals.set('discountCode', responseJson.code);",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"code\": \"SOLAR20\",\n  \"description\": \"20% off solar equipment\",\n  \"discountType\": \"percentage\",\n  \"discountValue\": 20,\n  \"minimumAmount\": 100,\n  \"expiresAt\": \"2024-12-31T23:59:59.000Z\",\n  \"usageLimit\": 100\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/discounts",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "discounts"]
-            }
-          }
-        },
-        {
-          "name": "Validate Discount Code",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Discount validation successful', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "pm.test('Discount is valid', function () {",
-                  "    const responseJson = pm.response.json();",
-                  "    pm.expect(responseJson).to.have.property('isValid');",
-                  "    pm.expect(responseJson.isValid).to.be.true;",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/discounts/validate/{{discountCode}}?amount=500",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "discounts", "validate", "{{discountCode}}"],
-              "query": [
-                {
-                  "key": "amount",
-                  "value": "500"
-                }
-              ]
-            }
-          }
-        }
-      ]
+      "key": "currentUserId",
+      "value": "",
+      "type": "string"
     },
     {
-      "name": "User Management",
-      "item": [
-        {
-          "name": "Update User Profile",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Profile updated successfully', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "pm.test('Updated data reflected', function () {",
-                  "    const responseJson = pm.response.json();",
-                  "    pm.expect(responseJson.name).to.include('Updated');",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Updated Test User\",\n  \"email\": \"testuser@example.com\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/users/profile",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "users", "profile"]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "Error Handling Tests",
-      "item": [
-        {
-          "name": "Invalid Authentication",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Unauthorized access blocked', function () {",
-                  "    pm.response.to.have.status(401);",
-                  "});",
-                  "",
-                  "pm.test('Error message provided', function () {",
-                  "    const responseJson = pm.response.json();",
-                  "    pm.expect(responseJson).to.have.property('message');",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer invalid_token"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/cart/items",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "cart", "items"]
-            }
-          }
-        },
-        {
-          "name": "Product Not Found",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Not found status returned', function () {",
-                  "    pm.response.to.have.status(404);",
-                  "});",
-                  "",
-                  "pm.test('Error message provided', function () {",
-                  "    const responseJson = pm.response.json();",
-                  "    pm.expect(responseJson).to.have.property('message');",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/products/99999",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "products", "99999"]
-            }
-          }
-        },
-        {
-          "name": "Invalid Data Validation",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Validation error returned', function () {",
-                  "    pm.response.to.have.status(400);",
-                  "});",
-                  "",
-                  "pm.test('Validation errors detailed', function () {",
-                  "    const responseJson = pm.response.json();",
-                  "    pm.expect(responseJson).to.have.property('message');",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"productId\": \"invalid\",\n  \"quantity\": -5\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/cart/items",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "cart", "items"]
-            }
-          }
-        }
-      ]
+      "key": "currentUserRole",
+      "value": "",
+      "type": "string"
     }
   ]
 }
