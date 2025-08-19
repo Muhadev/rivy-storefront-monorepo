@@ -1,6 +1,9 @@
 import cors from 'cors';
 
-const allowedOrigins = process.env.CORS_ORIGIN?.split(',') || ['*'];
+const allowedOrigins = [
+  'http://localhost:3001',
+  'https://rivy-storefront-monorepo-1.onrender.com',
+];
 
 const corsOptions = {
   origin: allowedOrigins,
