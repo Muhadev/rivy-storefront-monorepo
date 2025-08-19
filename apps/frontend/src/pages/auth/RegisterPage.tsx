@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { RegisterCredentials } from '@/repositories/auth.repository';
 import { Leaf, Eye, EyeOff } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth.store';
 import { Button } from '@/components/ui/Button';
@@ -43,7 +44,7 @@ export function RegisterPage() {
   const onSubmit = async (data: RegisterFormData) => {
     try {
       const { confirmPassword, ...registerData } = data;
-      await registerUser(registerData);
+      await registerUser(registerData as RegisterCredentials);
       toast.success('Account created successfully!');
       navigate('/');
     } catch (error) {

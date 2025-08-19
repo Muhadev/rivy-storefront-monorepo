@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { LoginCredentials } from '@/repositories/auth.repository';
 import { Leaf, Eye, EyeOff } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth.store';
 import { Button } from '@/components/ui/Button';
@@ -35,7 +36,7 @@ export function LoginPage() {
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      await login(data);
+      await login(data as LoginCredentials);
       toast.success('Login successful!');
       navigate(from, { replace: true });
     } catch (error) {
