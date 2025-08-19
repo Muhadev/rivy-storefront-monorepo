@@ -10,6 +10,9 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
+.env.test.example
+.env.example
+# Allow .env.test to be committed
 
 # Build outputs
 dist/
