@@ -37,3 +37,6 @@ COPY --from=builder /app/package.json ./package.json
 USER nextjs
 
 EXPOSE 3000
+
+# Start the production server
+CMD ["serve", "-s", "dist", "-l", "3000"]

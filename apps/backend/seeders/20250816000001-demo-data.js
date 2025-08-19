@@ -6,28 +6,21 @@ const bcrypt = require('bcryptjs');
 module.exports = {
   async up(queryInterface, Sequelize) {
     // Hash passwords for demo users
-    const adminPasswordHash = await bcrypt.hash('admin123', 10);
+      const adminPasswordHash = await bcrypt.hash('admin123', 10);
     const userPasswordHash = await bcrypt.hash('user123', 10);
 
-    // Insert Users
-    await queryInterface.bulkInsert('users', [
-      {
-        email: 'admin@rivy.com',
-        passwordHash: adminPasswordHash,
-        name: 'Admin User',
-        role: 'admin',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
-        email: 'user@rivy.com',
-        passwordHash: userPasswordHash,
-        name: 'Regular User',
-        role: 'customer',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      }
-    ], {});
+    // Upsert Users (insert or update if exists)
+      await queryInterface.sequelize.query(`
+        INSERT INTO users (email, "passwordHash", name, role, "createdAt", "updatedAt")
+        VALUES
+          ('admin@rivy.com', '${adminPasswordHash}', 'Admin User', 'admin', NOW(), NOW()),
+          ('user@rivy.com', '${userPasswordHash}', 'Regular User', 'customer', NOW(), NOW())
+        ON CONFLICT (email) DO UPDATE SET
+          "passwordHash" = EXCLUDED."passwordHash",
+          name = EXCLUDED.name,
+          role = EXCLUDED.role,
+          "updatedAt" = NOW();
+      `);
 
     // Insert Categories
     await queryInterface.bulkInsert('categories', [
@@ -177,36 +170,22 @@ module.exports = {
     ], {});
 
     // Insert Sample Discounts
-    await queryInterface.bulkInsert('discounts', [
-      {
-        code: 'WELCOME10',
-        description: '10% off for new customers',
-        type: 'percentage',
-        value: 10.00,
-        minOrderAmount: 100.00,
-        maxUses: 100,
-        usedCount: 0,
-        startDate: new Date(),
-        endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
-        isActive: true,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
-        code: 'SOLAR50',
-        description: '$50 off solar panel purchases over $500',
-        type: 'fixed',
-        value: 50.00,
-        minOrderAmount: 500.00,
-        maxUses: 50,
-        usedCount: 0,
-        startDate: new Date(),
-        endDate: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000), // 60 days from now
-        isActive: true,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      }
-    ], {});
+    await queryInterface.sequelize.query(`
+      INSERT INTO discounts (code, description, type, value, "minOrderAmount", "maxUses", "usedCount", "startDate", "endDate", "isActive", "createdAt", "updatedAt") VALUES
+        ('WELCOME10', '10% off for new customers', 'percentage', 10.00, 100.00, 100, 0, NOW(), NOW() + interval '30 days', true, NOW(), NOW()),
+        ('SOLAR50', '$50 off solar panel purchases over $500', 'fixed', 50.00, 500.00, 50, 0, NOW(), NOW() + interval '60 days', true, NOW(), NOW())
+      ON CONFLICT (code) DO UPDATE SET
+        description = EXCLUDED.description,
+        type = EXCLUDED.type,
+        value = EXCLUDED.value,
+        "minOrderAmount" = EXCLUDED."minOrderAmount",
+        "maxUses" = EXCLUDED."maxUses",
+        "usedCount" = EXCLUDED."usedCount",
+        "startDate" = EXCLUDED."startDate",
+        "endDate" = EXCLUDED."endDate",
+        "isActive" = EXCLUDED."isActive",
+        "updatedAt" = NOW();
+    `);
   },
 
   async down(queryInterface, Sequelize) {

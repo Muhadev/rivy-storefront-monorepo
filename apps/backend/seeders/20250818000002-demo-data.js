@@ -24,9 +24,8 @@ function getRandomCategoryId() {
 module.exports = {
   async up(queryInterface, Sequelize) {
     // Seed categories
-    await queryInterface.bulkInsert("categories", categories.map((cat, i) => ({
+    await queryInterface.bulkInsert("categories", categories.map((cat) => ({
       ...cat,
-      id: i + 1,
       createdAt: new Date(),
       updatedAt: new Date()
     })), {});
