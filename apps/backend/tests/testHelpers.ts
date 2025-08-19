@@ -42,7 +42,7 @@ export async function setupTestDatabase() {
       description: 'Energy storage solutions'
     });
 
-    // Create test products
+    // Create test products for both admin and test user
     const products = await Product.bulkCreate([
       {
         name: 'High-Efficiency Solar Panel',
@@ -50,7 +50,8 @@ export async function setupTestDatabase() {
         price: 299.99,
         stock: 50,
         categoryId: solarCategory.id,
-        imageUrl: 'https://example.com/solar-panel.jpg'
+        imageUrl: 'https://example.com/solar-panel.jpg',
+        createdBy: adminUser.id
       },
       {
         name: 'Solar Inverter',
@@ -58,7 +59,8 @@ export async function setupTestDatabase() {
         price: 599.99,
         stock: 25,
         categoryId: solarCategory.id,
-        imageUrl: 'https://example.com/inverter.jpg'
+        imageUrl: 'https://example.com/inverter.jpg',
+        createdBy: adminUser.id
       },
       {
         name: 'Lithium Battery Pack',
@@ -66,7 +68,8 @@ export async function setupTestDatabase() {
         price: 899.99,
         stock: 15,
         categoryId: batteryCategory.id,
-        imageUrl: 'https://example.com/battery.jpg'
+        imageUrl: 'https://example.com/battery.jpg',
+        createdBy: adminUser.id
       },
       {
         name: 'Solar Charge Controller',
@@ -74,7 +77,27 @@ export async function setupTestDatabase() {
         price: 199.99,
         stock: 30,
         categoryId: solarCategory.id,
-        imageUrl: 'https://example.com/controller.jpg'
+        imageUrl: 'https://example.com/controller.jpg',
+        createdBy: adminUser.id
+      },
+      // Products for test user
+      {
+        name: 'Test User Solar Panel',
+        description: 'Test user product for integration tests',
+        price: 199.99,
+        stock: 10,
+        categoryId: solarCategory.id,
+        imageUrl: 'https://example.com/test-user-panel.jpg',
+        createdBy: testUser.id
+      },
+      {
+        name: 'Test User Battery',
+        description: 'Test user battery for integration tests',
+        price: 299.99,
+        stock: 5,
+        categoryId: batteryCategory.id,
+        imageUrl: 'https://example.com/test-user-battery.jpg',
+        createdBy: testUser.id
       }
     ]);
 

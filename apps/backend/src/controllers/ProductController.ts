@@ -3,11 +3,10 @@ import ProductService from '../services/ProductService';
 
 class ProductController {
   static async getAll(req: Request, res: Response, next: NextFunction) {
-    if (!req.user) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
     try {
       const { page = 1, limit = 10, q: search = '', category, minPrice, maxPrice } = req.query;
+      
+      // Public browsing endpoint: never scope by admin here
       const products = await ProductService.getAll({
         page: Number(page),
         limit: Number(limit),
@@ -15,7 +14,7 @@ class ProductController {
         category: category ? String(category) : undefined,
         minPrice: minPrice ? Number(minPrice) : undefined,
         maxPrice: maxPrice ? Number(maxPrice) : undefined,
-        createdBy: req.user.id,
+        // Do not pass createdBy; admin-scoped listing is served by /admin/products
       });
       res.json(products);
     } catch (err) {

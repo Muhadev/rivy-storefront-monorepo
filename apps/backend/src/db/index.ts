@@ -28,12 +28,12 @@ export async function connectDb() {
     await sequelize.authenticate();
     console.log('Database connection established successfully');
     
-    // Only sync in development - use migrations in production
-    if (process.env.NODE_ENV === 'development') {
+    // Prefer migrations by default. Enable sync explicitly with DB_SYNC=true
+    if (process.env.DB_SYNC === 'true') {
       await sequelize.sync();
-      console.log('Database models synchronized (development)');
+      console.log('Database models synchronized (DB_SYNC enabled)');
     } else {
-      console.log('ℹRunning in production - using migrations for schema management');
+      console.log('ℹ Using migrations for schema management (DB_SYNC disabled)');
     }
   } catch (error) {
     console.error('Unable to connect to database:', error);

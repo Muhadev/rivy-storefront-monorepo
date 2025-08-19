@@ -24,7 +24,7 @@ OrderItem.init({
   orderId: { type: DataTypes.INTEGER, allowNull: false },
   productId: { type: DataTypes.INTEGER, allowNull: false },
   quantity: { type: DataTypes.INTEGER, allowNull: false },
-  unitPrice: { type: DataTypes.DECIMAL(10,2), allowNull: false }
+  unitPrice: { type: DataTypes.DECIMAL(10,2), allowNull: false, field: 'price' }
 }, { sequelize, tableName: 'order_items' });
 
 export { OrderItem };

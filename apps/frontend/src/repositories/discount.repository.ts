@@ -32,6 +32,18 @@ export class DiscountRepository {
     return await apiClient.get<Discount[]>(ENDPOINTS.DISCOUNTS.LIST);
   }
 
+  async createDiscount(payload: Partial<Discount>): Promise<Discount> {
+    return await apiClient.post<Discount>(ENDPOINTS.DISCOUNTS.LIST, payload);
+  }
+
+  async updateDiscount(id: number, payload: Partial<Discount>): Promise<Discount> {
+    return await apiClient.put<Discount>(ENDPOINTS.DISCOUNTS.UPDATE(id), payload);
+  }
+
+  async deleteDiscount(id: number): Promise<void> {
+    await apiClient.delete(ENDPOINTS.DISCOUNTS.DELETE(id));
+  }
+
   async applyDiscount(data: ApplyDiscountData): Promise<DiscountResult> {
   // Real backend call
   const response = await apiClient.post<DiscountResult>(ENDPOINTS.DISCOUNTS.APPLY, data);

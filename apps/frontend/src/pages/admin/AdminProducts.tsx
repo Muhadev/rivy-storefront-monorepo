@@ -10,7 +10,7 @@ import {
   Package,
   AlertCircle
 } from 'lucide-react';
-import { productRepository } from '@/repositories/product.repository';
+import { adminApi } from '@/repositories/admin.repository';
 import { QUERY_KEYS } from '@/config/api';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -31,11 +31,24 @@ export function AdminProducts() {
       page: currentPage,
       limit: itemsPerPage 
     }],
-    queryFn: () => productRepository.getProducts({
-      q: searchQuery,
-      page: currentPage,
-      limit: itemsPerPage,
-    }),
+    queryFn: async () => {
+      const res = await adminApi.getAdminProducts({
+        search: searchQuery,
+        page: currentPage,
+        limit: itemsPerPage,
+      });
+      return {
+        data: res.products,
+        pagination: {
+          page: res.pagination.page,
+          limit: res.pagination.limit,
+          total: res.pagination.total,
+          totalPages: res.pagination.pages,
+          hasPrev: res.pagination.page > 1,
+          hasNext: res.pagination.page < res.pagination.pages,
+        }
+      };
+    },
   });
 
   const handleSearch = (e: React.FormEvent) => {
@@ -46,7 +59,8 @@ export function AdminProducts() {
   const handleDeleteProduct = async (product: Product) => {
     if (window.confirm(`Are you sure you want to delete "${product.name}"?`)) {
       try {
-        await productRepository.deleteProduct(product.id);
+        // Use public delete endpoint (ownership enforced backend-side)
+        await fetch(`/api/v1/products/${product.id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${localStorage.getItem('token') || ''}` } });
         // Refetch products
         window.location.reload();
       } catch (error) {

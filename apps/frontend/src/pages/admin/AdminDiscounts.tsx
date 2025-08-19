@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDiscountStore } from '@/stores/discount.store';
+import { discountRepository } from '@/repositories/discount.repository';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { DollarSign, Trash2, Edit, Plus } from 'lucide-react';
@@ -14,10 +15,10 @@ export function AdminDiscounts() {
   }, [fetchDiscounts]);
 
   // Remove discount by id
-  const handleRemove = (id: number) => {
-    if (window.confirm('Delete this discount code?')) {
-      removeDiscount(); // This resets appliedDiscount, not the list. You may want to call backend delete here.
-    }
+  const handleRemove = async (id: number) => {
+    if (!window.confirm('Delete this discount code?')) return;
+    await discountRepository.deleteDiscount(id);
+    await fetchDiscounts();
   };
 
   return (

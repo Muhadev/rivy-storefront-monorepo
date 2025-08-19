@@ -1,65 +1,77 @@
 
-import { useEffect } from 'react';
-import { useOrderStore } from '@/stores/order.store';
-import { useUserStore } from '@/stores/user.store';
-import { useDiscountStore } from '@/stores/discount.store';
-import { useCartStore } from '@/stores/cart.store';
-import { useReviewStore } from '@/stores/review.store';
 import { useQuery } from '@tanstack/react-query';
 import { Package, ShoppingCart, Users, DollarSign, TrendingUp, AlertCircle, Plus, Star, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { adminApi } from '@/repositories/admin.repository';
 
 export function AdminDashboard() {
-  const { orders, fetchOrders } = useOrderStore();
-  const { profile, fetchProfile } = useUserStore();
-  const { discounts, fetchDiscounts } = useDiscountStore();
-  const { items, fetchCart } = useCartStore();
-  const { reviews, fetchReviews } = useReviewStore();
-
-  useEffect(() => {
-    fetchOrders();
-    fetchProfile();
-    fetchDiscounts();
-    fetchCart();
-    fetchReviews();
-  }, []);
+  const { data: dashboardData, isLoading, error } = useQuery({
+    queryKey: ['admin-dashboard'],
+    queryFn: adminApi.getDashboardData,
+    refetchInterval: 30000, // Refresh every 30 seconds
+  });
 
   // Stats
   const stats = [
     {
       name: 'Total Products',
-      value: items.length,
+      value: dashboardData?.stats.totalProducts || 0,
       icon: Package,
     },
     {
       name: 'Total Orders',
-      value: orders.length,
+      value: dashboardData?.stats.totalOrders || 0,
       icon: ShoppingCart,
     },
     {
       name: 'Total Customers',
-      value: profile ? 1 : 0, // For demo, replace with real customer count
+      value: dashboardData?.stats.totalCustomers || 0,
       icon: Users,
     },
     {
       name: 'Discounts',
-      value: discounts.length,
+      value: dashboardData?.stats.totalDiscounts || 0,
       icon: DollarSign,
     },
     {
       name: 'Reviews',
-      value: reviews.length,
+      value: dashboardData?.stats.totalReviews || 0,
       icon: Star,
     },
   ];
 
   // Recent Orders
-  const recentOrders = orders.slice(0, 5);
+  const recentOrders = dashboardData?.recentOrders || [];
 
-  // Low Stock Products (demo: items with stock <= 5)
-  const lowStockProducts = items.filter(item => item.product?.stock !== undefined && item.product.stock <= 5);
+  // Low Stock Products
+  const lowStockProducts = dashboardData?.lowStockProducts || [];
+
+  // Stats queries (products and orders)
+  // Optional: you can hydrate separate charts
+  // const { data: productStats } = useQuery({ queryKey: ['admin-product-stats'], queryFn: adminApi.getProductStats });
+  // const { data: orderStats } = useQuery({ queryKey: ['admin-order-stats'], queryFn: adminApi.getOrderStats });
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="text-center py-8">
+          <p className="text-gray-600">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div className="text-center py-8">
+          <p className="text-red-600">Error loading dashboard: {error.message}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

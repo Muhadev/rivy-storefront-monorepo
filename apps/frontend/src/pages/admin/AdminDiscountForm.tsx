@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDiscountStore } from '@/stores/discount.store';
+import { discountRepository } from '@/repositories/discount.repository';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -49,7 +50,19 @@ export function AdminDiscountForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // TODO: Integrate with backend create/update endpoints
+      const payload = {
+        code: form.code,
+        type: form.type as 'percentage' | 'fixed',
+        value: Number(form.value),
+        minOrderAmount: form.minOrderAmount ? Number(form.minOrderAmount) : undefined,
+        maxUses: form.maxUses ? Number(form.maxUses) : undefined,
+        isActive: form.isActive,
+      };
+      if (isEdit && id) {
+        await discountRepository.updateDiscount(Number(id), payload);
+      } else {
+        await discountRepository.createDiscount(payload);
+      }
       toast.success(isEdit ? 'Discount updated' : 'Discount created');
       navigate('/admin/discounts');
     } catch (err) {

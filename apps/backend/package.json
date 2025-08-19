@@ -23,6 +23,7 @@
     "db:migrate:prod": "NODE_ENV=production npx sequelize-cli db:migrate",
     "db:migrate:prod:status": "NODE_ENV=production npx sequelize-cli db:migrate:status",
     "db:seed": "npx sequelize-cli db:seed:all",
+    "db:seed:ts": "node -r ts-node/register -r dotenv/config src/seed.ts dotenv_config_path=.env",
     "db:seed:create": "npx sequelize-cli seed:generate --name",
     "db:reset": "npx sequelize-cli db:drop && npx sequelize-cli db:create && npm run db:migrate && npm run db:seed",
     "seed:prod": "NODE_ENV=production node -r dotenv/config dist/seed.js dotenv_config_path=.env.production.local",

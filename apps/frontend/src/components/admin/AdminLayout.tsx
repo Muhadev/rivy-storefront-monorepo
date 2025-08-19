@@ -19,7 +19,7 @@ const navigation = [
   { name: 'Orders', href: '/admin/orders', icon: ShoppingCart },
   { name: 'Customers', href: '/admin/customers', icon: Users },
   { name: 'Reviews', href: '/admin/reviews', icon: Star },
-  { name: 'Discount', href: '/admin/discounts', icon: TrendingUp },
+  { name: 'Discounts', href: '/admin/discounts', icon: TrendingUp },
   { name: 'Settings', href: '/admin/settings', icon: Settings },
 ];
 

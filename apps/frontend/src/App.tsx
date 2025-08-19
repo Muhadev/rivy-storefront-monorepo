@@ -24,6 +24,7 @@ import { AdminReviewForm } from '@/pages/admin/AdminReviewForm';
 import { AdminDiscountForm } from '@/pages/admin/AdminDiscountForm';
 import { AdminDiscounts } from '@/pages/admin/AdminDiscounts';
 import { AdminProfile } from '@/pages/admin/AdminProfile';
+import { AdminCustomers } from '@/pages/admin/AdminCustomers';
 import AdminProductForm from '@/pages/admin/AdminProductForm';
 import ProfilePage from '@/pages/ProfilePage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
@@ -121,13 +122,12 @@ function AppContent() {
               <Route path="orders" element={<AdminOrders />} />
               <Route path="profile" element={<AdminProfile />} />
               <Route path="reviews" element={<AdminReviews />} />
-            <Route path="reviews/new" element={<AdminReviewForm />} />
-            <Route path="reviews/:id/edit" element={<AdminReviewForm />} />
+              <Route path="reviews/new" element={<AdminReviewForm />} />
+              <Route path="reviews/:id/edit" element={<AdminReviewForm />} />
               <Route path="discounts" element={<AdminDiscounts />} />
-            <Route path="discounts/new" element={<AdminDiscountForm />} />
-            <Route path="discounts/:id/edit" element={<AdminDiscountForm />} />
-              <Route path="orders" element={<AdminOrders />} />
-              <Route path="profile" element={<AdminProfile />} />
+              <Route path="discounts/new" element={<AdminDiscountForm />} />
+              <Route path="discounts/:id/edit" element={<AdminDiscountForm />} />
+              <Route path="customers" element={<AdminCustomers />} />
               {/* Add more admin routes here */}
           </Route>
           

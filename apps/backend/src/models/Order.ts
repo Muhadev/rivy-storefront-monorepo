@@ -30,7 +30,6 @@ Order.init({
   address: { type: DataTypes.STRING, allowNull: false }
 }, { sequelize, tableName: 'orders' });
 
-// Define associations
-Order.hasMany(OrderItem, { as: 'items', foreignKey: 'orderId' });
+// Associations are defined centrally in src/models/index.ts to avoid duplication
 
 export default Order;

@@ -7,9 +7,10 @@ import discounts from './discounts';
 import checkout from './checkout';
 import orders from './orders';
 import users from './users';
+import admin from './admin';
 import { authenticate } from '../middlewares/auth';
 import HealthController from '../controllers/HealthController';
-import '../models'; // init associations
+// Associations are initialized in app bootstrap; avoid double-initialization here
 
 export const router = Router();
 
@@ -36,3 +37,4 @@ router.use('/discounts', discounts);
 router.use('/checkout', authenticate, checkout);
 router.use('/orders', authenticate, orders);
 router.use('/users', authenticate, users);
+router.use('/admin', admin);

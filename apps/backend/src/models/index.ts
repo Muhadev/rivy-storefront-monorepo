@@ -8,8 +8,8 @@ import Discount from './Discount';
 import User from './User';
 
 // Order associations
-Order.hasMany(OrderItem, { foreignKey: 'orderId' });
-OrderItem.belongsTo(Order, { foreignKey: 'orderId' });
+Order.hasMany(OrderItem, { foreignKey: 'orderId', as: 'items' });
+OrderItem.belongsTo(Order, { foreignKey: 'orderId', as: 'order' });
 
 // OrderItem-Product associations
 OrderItem.belongsTo(Product, { foreignKey: 'productId', as: 'product' });
