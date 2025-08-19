@@ -20,7 +20,7 @@ const navigation = [
   { name: 'Customers', href: '/admin/customers', icon: Users },
   { name: 'Reviews', href: '/admin/reviews', icon: Star },
   { name: 'Discounts', href: '/admin/discounts', icon: TrendingUp },
-  { name: 'Settings', href: '/admin/settings', icon: Settings },
+  { name: 'Settings (coming soon)', href: '/admin/settings', icon: Settings },
 ];
 
 export function AdminLayout() {

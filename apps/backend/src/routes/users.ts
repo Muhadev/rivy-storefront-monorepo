@@ -11,5 +11,5 @@ const router = Router();
 router.get('/me', authenticate, rateLimit, logger, UserController.profile);
 router.put('/me', authenticate, rateLimit, logger, validate([updateUserSchema]), UserController.update);
 router.delete('/me', authenticate, rateLimit, logger, UserController.delete);
-
+router.get('/', authenticate, UserController.getAllUsers);
 export default router;

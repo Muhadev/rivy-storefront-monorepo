@@ -40,7 +40,10 @@ export function AdminCustomers() {
 
   const { data, isLoading, error } = useQuery<CustomersResponse>({
     queryKey: ['admin-customers', debouncedSearch, page],
-    queryFn: () => adminApi.getCustomers({ search: debouncedSearch, page, limit: 10 }),
+    queryFn: async () => {
+      const res = await adminApi.getCustomers({ search: debouncedSearch, page, limit: 10 }) as any;
+      return res;
+    },
     placeholderData: keepPreviousData,
   });
 

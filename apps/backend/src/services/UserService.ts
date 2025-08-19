@@ -18,6 +18,10 @@ class UserService {
   static async delete(id: number) {
     return UserRepository.delete(id);
   }
+  static async getAll() {
+    // Assuming UserRepository has a method to get all users
+    return UserRepository.getAll();
+  }
 }
 
 export default UserService;

@@ -21,7 +21,18 @@ class UserController {
       next(err);
     }
   }
-
+  static async getAllUsers(req: Request, res: Response, next: NextFunction) {
+    try {
+      // Check if the authenticated user is an admin
+      if (!req.user || req.user.role !== 'admin') {
+        return res.status(403).json({ error: 'Forbidden: Admins only' });
+      }
+      const users = await UserService.getAll();
+      res.json(users);
+    } catch (err) {
+      next(err);
+    }
+  }
   static async delete(req: Request, res: Response, next: NextFunction) {
     try {
       const success = await UserService.delete(req.user!.id);

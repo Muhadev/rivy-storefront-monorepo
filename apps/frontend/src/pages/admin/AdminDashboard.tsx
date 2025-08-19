@@ -1,4 +1,3 @@
-
 import { useQuery } from '@tanstack/react-query';
 import { Package, ShoppingCart, Users, DollarSign, TrendingUp, AlertCircle, Plus, Star, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
@@ -9,11 +8,10 @@ import { adminApi } from '@/repositories/admin.repository';
 export function AdminDashboard() {
   const { data: dashboardData, isLoading, error } = useQuery({
     queryKey: ['admin-dashboard'],
-    queryFn: adminApi.getDashboardData,
-    refetchInterval: 30000, // Refresh every 30 seconds
+    queryFn: adminApi.getDashboardSummary,
+    // refetchInterval: 30000,
   });
 
-  // Stats
   const stats = [
     {
       name: 'Total Products',
@@ -42,16 +40,8 @@ export function AdminDashboard() {
     },
   ];
 
-  // Recent Orders
   const recentOrders = dashboardData?.recentOrders || [];
-
-  // Low Stock Products
   const lowStockProducts = dashboardData?.lowStockProducts || [];
-
-  // Stats queries (products and orders)
-  // Optional: you can hydrate separate charts
-  // const { data: productStats } = useQuery({ queryKey: ['admin-product-stats'], queryFn: adminApi.getProductStats });
-  // const { data: orderStats } = useQuery({ queryKey: ['admin-order-stats'], queryFn: adminApi.getOrderStats });
 
   if (isLoading) {
     return (
@@ -80,38 +70,6 @@ export function AdminDashboard() {
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
           <p className="text-gray-600">Welcome back! Here's what's happening with your store.</p>
-        </div>
-        <div className="flex space-x-3">
-          <Link to="/admin/products/new">
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Product
-            </Button>
-          </Link>
-          <Link to="/admin/orders">
-            <Button variant="outline">
-              <ShoppingCart className="h-4 w-4 mr-2" />
-              Orders
-            </Button>
-          </Link>
-          <Link to="/admin/reviews">
-            <Button variant="outline">
-              <Star className="h-4 w-4 mr-2" />
-              Reviews
-            </Button>
-          </Link>
-          <Link to="/admin/discounts">
-            <Button variant="outline">
-              <DollarSign className="h-4 w-4 mr-2" />
-              Discounts
-            </Button>
-          </Link>
-          <Link to="/admin/settings">
-            <Button variant="outline">
-              <Settings className="h-4 w-4 mr-2" />
-              Settings
-            </Button>
-          </Link>
         </div>
       </div>
 
@@ -152,7 +110,7 @@ export function AdminDashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Recent Orders</CardTitle>
-            <Link to="/admin/orders">
+            <Link to="/orders">
               <Button variant="outline" size="sm">
                 View All
               </Button>
@@ -160,7 +118,7 @@ export function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {recentOrders.map((order) => (
+              {recentOrders.map((order: any) => (
                 <div key={order.id} className="flex items-center justify-between border-b border-gray-200 pb-4 last:border-b-0 last:pb-0">
                   <div>
                     <p className="font-medium text-gray-900">Order #{order.id}</p>
@@ -190,7 +148,7 @@ export function AdminDashboard() {
               <AlertCircle className="h-5 w-5 text-orange-500 mr-2" />
               Low Stock Alert
             </CardTitle>
-            <Link to="/admin/products">
+            <Link to="/products">
               <Button variant="outline" size="sm">
                 Manage Stock
               </Button>
@@ -198,15 +156,15 @@ export function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {lowStockProducts.map((item) => (
+              {lowStockProducts.map((item: any) => (
                 <div key={item.product?.id || item.id} className="flex items-center justify-between border-b border-gray-200 pb-4 last:border-b-0 last:pb-0">
                   <div>
-                    <p className="font-medium text-gray-900">{item.product?.name}</p>
+                    <p className="font-medium text-gray-900">{item.product?.name ?? item.name}</p>
                     <p className="text-sm text-gray-600">Threshold: 5 units</p>
                   </div>
                   <div className="text-right">
                     <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
-                      {item.product?.stock} left
+                      {item.product?.stock ?? item.stock} left
                     </span>
                   </div>
                 </div>

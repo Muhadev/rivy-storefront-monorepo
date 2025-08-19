@@ -24,6 +24,10 @@ class UserRepository {
     await user.destroy();
     return true;
   }
+  static async getAll() {
+    const users = await User.findAll({ attributes: { exclude: ['passwordHash'] } });
+    return users.map(user => user.get({ plain: true }));
+  }
 }
 
 export default UserRepository;
