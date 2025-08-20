@@ -54,6 +54,7 @@ Rivy Storefront is a modern e-commerce platform featuring:
 3. **Start all services (root compose):**
 	```bash
 	docker compose up --build
+	NOTE: if you are on a window system run up.bat to spin off both the backend and frontend on the docker, then you can bring it down with the down.bat after you are done
 	```
 4. **Start backend only (with nginx, db):**
 	```bash
@@ -236,41 +237,6 @@ The ER diagram above illustrates the relationships between core entities: Users,
 
 ---
 
-## Getting Started
-
-### Prerequisites
-- Docker & Docker Compose
-- Node.js (v18+ recommended)
-- npm
-
-### Setup Instructions
-1. **Clone the repository:**
-	```bash
-	git clone https://github.com/Muhadev/rivy-storefront-monorepo.git
-	cd rivy-storefront-monorepo
-	```
-2. **Copy environment files:**
-	```bash
-	cp apps/backend/.env.example apps/backend/.env
-	cp apps/frontend/.env.example apps/frontend/.env
-	```
-3. **Start all services (root compose):**
-	```bash
-	docker compose up --build
-	```
-4. **Start backend only (with nginx, db):**
-	```bash
-	cd apps/backend
-	docker compose up --build
-	```
-
-**Access Points:**
-- API: [http://localhost:4000/api](http://localhost:4000/api)
-- OpenAPI Docs: [http://localhost:4000/api/v1/docs](http://localhost:4000/api/v1/docs)
-- Frontend: [http://localhost:5173](http://localhost:5173)
-
----
-
 ## API Documentation
 
 - The OpenAPI spec is available at `/api/v1/docs` (YAML format)
@@ -352,7 +318,7 @@ We welcome contributions from developers, designers, and product managers. Pleas
 
 ## Contact & Support
 
-- For questions, issues, or feature requests, open an issue on GitHub or contact the maintainer at [muhadev@example.com](mailto:muhadev@example.com).
+- For questions, issues, or feature requests, open an issue on GitHub or contact the maintainer at [muhammedfayemi@gmail.com](mailto:muhammedfayemi@gmail.com).
 
 ---
 
