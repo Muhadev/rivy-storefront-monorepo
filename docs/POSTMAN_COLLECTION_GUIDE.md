@@ -1,78 +1,78 @@
-# 🛍️ Rivy Storefront API - Professional Postman Collection
+# Rivy Storefront API - Professional Postman Collection
 
-## 📋 **Collection Overview**
+## **Collection Overview**
 
-This is a **enterprise-grade Postman collection** designed by senior engineering standards for comprehensive API testing and documentation. Created for both technical and non-technical stakeholders.
+This is a **Postman collection** designed by for comprehensive API testing and documentation. Created for both technical and non-technical stakeholders.
 
 ---
 
-## 🏗️ **Collection Structure**
+## **Collection Structure**
 
 ### **7 Main Sections | 21 Endpoints Total**
 
-#### 🔐 **Authentication & User Management** (5 endpoints)
-- **👤 Customer Registration**: Create customer accounts with standard privileges
-- **🛡️ Admin Registration**: Create administrative accounts with elevated access
-- **🔑 User Login**: Authenticate users and obtain access tokens
-- **🔒 Forgot Password**: Initiate secure password reset process
-- **🔄 Reset Password**: Complete password reset with validation
+#### **Authentication & User Management** (5 endpoints)
+- **Customer Registration**: Create customer accounts with standard privileges
+- ** Admin Registration**: Create administrative accounts with elevated access
+- **User Login**: Authenticate users and obtain access tokens
+- **Forgot Password**: Initiate secure password reset process
+- **Reset Password**: Complete password reset with validation
 
-#### 📦 **Product Catalog Management** (3 endpoints)
-- **📋 List All Products**: Browse products with pagination and filtering
-- **🔍 Search Products**: Advanced product search with multiple criteria
-- **👁️ Get Product Details**: Comprehensive product information retrieval
+#### **Product Catalog Management** (3 endpoints)
+- **List All Products**: Browse products with pagination and filtering
+- ** Search Products**: Advanced product search with multiple criteria
+- **Get Product Details**: Comprehensive product information retrieval
 
-#### 🛒 **Shopping Cart Management** (4 endpoints)
-- **➕ Add Item to Cart**: Add products with inventory validation
-- **📋 View Cart Contents**: Display cart with calculated totals
-- **✏️ Update Cart Item**: Modify quantities with stock checking
-- **🗑️ Remove Item from Cart**: Remove items from shopping cart
+#### **Shopping Cart Management** (4 endpoints)
+- **Add Item to Cart**: Add products with inventory validation
+- **View Cart Contents**: Display cart with calculated totals
+- **Update Cart Item**: Modify quantities with stock checking
+- **Remove Item from Cart**: Remove items from shopping cart
 
-#### 📦 **Order Management** (3 endpoints)
-- **🛍️ Checkout Process**: Convert cart to order with payment simulation
-- **📋 Get Order Details**: Retrieve comprehensive order information
-- **📝 List User Orders**: Display user's order history with pagination
+#### **Order Management** (3 endpoints)
+- ** Checkout Process**: Convert cart to order with payment simulation
+- **Get Order Details**: Retrieve comprehensive order information
+- **List User Orders**: Display user's order history with pagination
 
-#### 👤 **User Profile Management** (2 endpoints)
-- **👁️ Get User Profile**: Retrieve current user's profile information
-- **✏️ Update User Profile**: Modify user account details
+#### **User Profile Management** (2 endpoints)
+- **Get User Profile**: Retrieve current user's profile information
+- **Update User Profile**: Modify user account details
 
-#### 🛡️ **Admin Operations** (3 endpoints)
-- **➕ Create Product (Admin)**: Add new products to catalog
-- **✏️ Update Product (Admin)**: Modify existing product information
-- **🗑️ Delete Product (Admin)**: Remove products from catalog
+####  **Admin Operations** (3 endpoints)
+- **Create Product (Admin)**: Add new products to catalog
+- **Update Product (Admin)**: Modify existing product information
+- **Delete Product (Admin)**: Remove products from catalog
 
-#### 🏥 **System Health & Utilities** (1 endpoint)
-- **💓 Health Check**: Verify system availability and database connectivity
+#### **System Health & Utilities** (1 endpoint)
+- **Health Check**: Verify system availability and database connectivity
 
 ---
 
-## 🎯 **Professional Features**
+## ** Features**
 
 ### **Documentation Quality**
-- ✅ **Business Logic Descriptions**: Clear explanation of each endpoint's purpose
-- ✅ **Request/Response Examples**: Comprehensive JSON examples with actual data
-- ✅ **Error Handling**: Detailed error codes and troubleshooting guidance
-- ✅ **Authentication Flows**: Step-by-step auth process documentation
-- ✅ **Use Case Scenarios**: Real-world application examples
+- **Business Logic Descriptions**: Clear explanation of each endpoint's purpose
+- **Request/Response Examples**: Comprehensive JSON examples with actual data
+- **Error Handling**: Detailed error codes and troubleshooting guidance
+- **Authentication Flows**: Step-by-step auth process documentation
+- **Use Case Scenarios**: Real-world application examples
 
 ### **Testing Excellence**
-- ✅ **Automated Test Suites**: 150+ individual test assertions
-- ✅ **Response Validation**: Comprehensive response structure verification
-- ✅ **Token Management**: Automatic token extraction and variable handling
-- ✅ **Error Detection**: Intelligent error reporting and debugging
-- ✅ **Variable Automation**: Smart collection variable management
+- **Automated Test Suites**: 70+ individual test assertions
+- **Response Validation**: Comprehensive response structure verification
+- **Token Management**: Automatic token extraction and variable handling
+- **Error Detection**: Intelligent error reporting and debugging
+- **Variable Automation**: Smart collection variable management
 
-### **Senior Engineering Standards**
-- ✅ **Role-Based Testing**: Separate admin and customer authentication flows
-- ✅ **Security Validation**: Token validation, password security, data exposure checks
-- ✅ **Performance Monitoring**: Response time validation and optimization checks
-- ✅ **Data Integrity**: Input validation and business rule enforcement
-- ✅ **Production Readiness**: Real-world scenarios and edge case handling
+### **Engineering Mindset**
+- **Role-Based Testing**: Separate admin and customer authentication flows
+- **Security Validation**: Token validation, password security, data exposure checks
+- **Performance Monitoring**: Response time validation and optimization checks
+- **Data Integrity**: Input validation and business rule enforcement
+- **Production Readiness**: Real-world scenarios and edge case handling
 
 ---
 
-## 🚀 **Quick Start Guide**
+## **Quick Start Guide**
 
 ### **1. Import Collection**
 1. Open Postman Desktop App
@@ -110,7 +110,7 @@ npm run dev
 
 ---
 
-## 📊 **Test Results & Examples**
+## **Test Results & Examples**
 
 ### **After Each Request, Save Response as Example:**
 
@@ -127,7 +127,7 @@ npm run dev
 
 ---
 
-## 🔧 **Advanced Configuration**
+## **Advanced Configuration**
 
 ### **Collection Variables** (Auto-managed)
 ```json
@@ -148,26 +148,26 @@ npm run dev
 
 ---
 
-## 🎭 **User Roles & Permissions**
+## **User Roles & Permissions**
 
 ### **Customer Role**
-- ✅ Product browsing and search
-- ✅ Shopping cart management
-- ✅ Order creation and tracking
-- ✅ Profile management
-- ❌ Product administration
-- ❌ User management
+- Product browsing and search
+- Shopping cart management
+- Order creation and tracking
+- Profile management
+- Product administration
+- User management
 
 ### **Admin Role**
-- ✅ All customer permissions
-- ✅ Product CRUD operations
-- ✅ Category management
-- ✅ User oversight
-- ✅ System administration
+- All customer permissions
+- Product CRUD operations
+- Category management
+- User oversight
+- System administration
 
 ---
 
-## 📈 **Business Logic Coverage**
+## **Business Logic Coverage**
 
 ### **E-commerce Operations**
 - **Inventory Management**: Stock validation and reservation
@@ -189,20 +189,7 @@ npm run dev
 
 ---
 
-## 📖 **Documentation Standards**
-
-This collection follows **senior full-stack engineer standards** with:
-
-- **Technical Accuracy**: Precise API behavior documentation
-- **Business Context**: Real-world use case explanations
-- **Error Handling**: Comprehensive error scenario coverage
-- **Security Awareness**: Security consideration documentation
-- **Performance Insights**: Optimization and scaling guidance
-- **Maintainability**: Clear, organized, and extensible structure
-
----
-
-## 🎯 **Perfect For**
+## **Perfect For**
 
 - **API Documentation**: Convert to comprehensive API docs
 - **Team Onboarding**: New developer quick-start guide
@@ -213,7 +200,7 @@ This collection follows **senior full-stack engineer standards** with:
 
 ---
 
-**Created by**: Senior Engineering Team  
+**Created by**: Muhadev  
 **Version**: 1.0  
 **Last Updated**: August 2025  
 **Compatibility**: Postman v10+ | Newman CLI | Postman Web**
