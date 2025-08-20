@@ -78,19 +78,18 @@ export function HomePage() {
                 </p>
               </div>
               
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Link to="/products">
-                  <Button size="lg" variant="primary" className="bg-green-600 hover:bg-green-700">
-                    Shop Products
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                </Link>
-                <Link to="/about">
-                  <Button size="lg" variant="outline">
-                    Learn More
-                  </Button>
-                </Link>
-              </div>
+                <div className="flex flex-col sm:flex-row gap-4 w-full">
+                  <Link to="/products" className="w-full sm:w-auto">
+                    <Button size="lg" className="w-full sm:w-auto">
+                      Shop Products
+                    </Button>
+                  </Link>
+                  <Link to="/about" className="w-full sm:w-auto">
+                    <Button size="lg" variant="outline" className="w-full sm:w-auto">
+                      Learn More
+                    </Button>
+                  </Link>
+                </div>
 
               {/* Stats */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-8">

@@ -45,15 +45,15 @@ export function ProductDetailsModal({ product, open, onOpenChange }: ProductDeta
       open={open}
       onOpenChange={onOpenChange}
       size="xl"
-      className="max-w-4xl"
+      className="max-w-full sm:max-w-lg md:max-w-2xl lg:max-w-4xl w-full p-2 sm:p-6 rounded-2xl overflow-y-auto max-h-[90vh]"
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 overflow-y-auto" style={{ maxHeight: '75vh' }}>
         {/* Product Image */}
-        <div className="aspect-square overflow-hidden rounded-lg bg-gray-50">
+        <div className="aspect-square overflow-hidden rounded-lg bg-gray-50 flex items-center justify-center">
           <img
             src={product.imageUrl || 'https://images.pexels.com/photos/9875416/pexels-photo-9875416.jpeg?auto=compress&cs=tinysrgb&w=600'}
             alt={product.name}
-            className="h-full w-full object-cover"
+            className="h-48 w-48 sm:h-64 sm:w-64 md:h-80 md:w-80 object-cover mx-auto"
           />
         </div>
 
@@ -67,7 +67,7 @@ export function ProductDetailsModal({ product, open, onOpenChange }: ProductDeta
           )}
 
           {/* Title */}
-          <h2 className="text-2xl font-bold text-gray-900">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
             {product.name}
           </h2>
 
@@ -94,10 +94,9 @@ export function ProductDetailsModal({ product, open, onOpenChange }: ProductDeta
 
           {/* Price */}
           <div className="space-y-1">
-            <p className="text-3xl font-bold text-gray-900">
+            <p className="text-2xl sm:text-3xl font-bold text-gray-900">
               {formatPrice(product.price)}
             </p>
-            
             {/* Stock Status */}
             <div className="flex items-center space-x-2">
               {isOutOfStock ? (
@@ -154,7 +153,7 @@ export function ProductDetailsModal({ product, open, onOpenChange }: ProductDeta
       </div>
 
       {/* Reviews Section */}
-      <div className="mt-8 pt-8 border-t border-gray-200">
+      <div className="mt-8 pt-8 border-t border-gray-200 overflow-y-auto" style={{ maxHeight: '20vh' }}>
         <ReviewsList productId={product.id} />
       </div>
     </Modal>

@@ -138,68 +138,33 @@ export function CartPage() {
                 
                 <div className="divide-y divide-gray-200">
                   {items.map((item) => (
-                    <div key={item.id} className="p-6">
-                      <div className="flex items-center space-x-4">
-                        <div className="h-16 w-16 flex-shrink-0">
+                    <div key={item.id} className="p-4 sm:p-6 border-b border-gray-100">
+                      <div className="flex flex-col sm:flex-row items-center sm:space-x-4 space-y-2 sm:space-y-0">
+                        <div className="h-20 w-20 sm:h-16 sm:w-16 flex-shrink-0 mb-2 sm:mb-0">
                           <img
                             src={item.product?.imageUrl || 'https://images.pexels.com/photos/9875416/pexels-photo-9875416.jpeg?auto=compress&cs=tinysrgb&w=200'}
                             alt={item.product?.name}
-                            className="h-16 w-16 rounded-lg object-cover"
+                            className="h-20 w-20 sm:h-16 sm:w-16 rounded-lg object-cover"
                           />
                         </div>
-                        
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-lg font-medium text-gray-900 mb-1">
-                            {item.product?.name}
-                          </h3>
-                          <p className="text-sm text-gray-600 mb-2">
-                            {item.product?.description}
-                          </p>
-                          <p className="text-lg font-semibold text-green-600">
-                            {formatPrice(item.product?.price || 0)}
-                          </p>
+                        <div className="flex-1 min-w-0 text-center sm:text-left">
+                          <div className="font-semibold text-gray-900 text-base sm:text-lg">{item.product?.name}</div>
+                          <div className="text-gray-600 text-sm">{item.product?.description}</div>
+                          <div className="text-lg font-semibold text-green-600">{formatPrice(item.product?.price || 0)}</div>
                         </div>
-                        
-                        <div className="flex items-center space-x-4">
-                          {/* Quantity Controls */}
-                          <div className="flex items-center space-x-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleUpdateQuantity(item.productId, item.quantity - 1)}
-                              disabled={isLoading}
-                            >
-                              <Minus className="h-4 w-4" />
-                            </Button>
-                            <span className="text-lg font-medium px-3 py-1 bg-gray-50 rounded-md min-w-[3rem] text-center">
-                              {item.quantity}
-                            </span>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleUpdateQuantity(item.productId, item.quantity + 1)}
-                              disabled={isLoading}
-                            >
-                              <Plus className="h-4 w-4" />
-                            </Button>
+                        <div className="flex flex-col sm:flex-row items-center sm:space-x-4 space-y-2 sm:space-y-0 mt-2 sm:mt-0">
+                          <div className="flex items-center">
+                            <Button size="sm" variant="outline" onClick={() => handleUpdateQuantity(item.productId, item.quantity - 1)}>-</Button>
+                            <span className="mx-2 font-medium">{item.quantity}</span>
+                            <Button size="sm" variant="outline" onClick={() => handleUpdateQuantity(item.productId, item.quantity + 1)}>+</Button>
                           </div>
-                          
-                          {/* Item Total */}
                           <div className="text-right min-w-[5rem]">
                             <p className="text-lg font-semibold text-gray-900">
                               {formatPrice((item.product?.price || 0) * item.quantity)}
                             </p>
                           </div>
-                          
-                          {/* Remove Button */}
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleRemoveItem(item.productId)}
-                            className="text-red-600 hover:text-red-700"
-                            disabled={isLoading}
-                          >
-                            <Trash2 className="h-4 w-4" />
+                          <Button size="sm" variant="ghost" className="text-red-600" onClick={() => handleRemoveItem(item.productId)}>
+                            <Trash2 className="h-4 w-4 mr-1" /> Remove
                           </Button>
                         </div>
                       </div>
