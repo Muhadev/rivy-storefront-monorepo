@@ -8,9 +8,9 @@ Welcome to the Rivy Storefront project! This monorepo is designed to be a robust
 ## Table of Contents
 
 1. [Project Overview](#project-overview)
-2. [Architecture & Technologies](#architecture--technologies)
-3. [Entity Relationship Diagram](#entity-relationship-diagram)
-4. [Getting Started](#getting-started)
+2. [Getting Started](#getting-started)
+3. [Architecture & Technologies](#architecture--technologies)
+4. [Entity Relationship Diagram](#entity-relationship-diagram) 
 5. [API Documentation](#api-documentation)
 6. [Testing & Quality](#testing--quality)
 7. [Workflows & Branching](#workflows--branching)
