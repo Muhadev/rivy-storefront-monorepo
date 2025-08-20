@@ -28,9 +28,9 @@ export function AdminLayout() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
-      {/* Sidebar */}
-      <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0">
-        <div className="flex-1 flex flex-col min-h-0 bg-white border-r border-gray-200">
+      {/* Sidebar - now visible on all screen sizes */}
+      <div className="w-full md:w-64 flex flex-col fixed inset-y-0 z-20 bg-white border-r border-gray-200">
+        <div className="flex-1 flex flex-col min-h-0">
           <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
             <div className="flex items-center flex-shrink-0 px-4 mb-8">
               <Link to="/" className="flex items-center text-green-600 hover:text-green-700">
@@ -72,8 +72,8 @@ export function AdminLayout() {
         </div>
       </div>
 
-      {/* Main content */}
-      <div className="md:pl-64 flex flex-col flex-1">
+      {/* Main content - add left margin on desktop, no margin on mobile */}
+      <div className="flex flex-col flex-1" style={{ marginLeft: '0', marginTop: '320px' }}>
         <main className="flex-1">
           <div className="py-6">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
