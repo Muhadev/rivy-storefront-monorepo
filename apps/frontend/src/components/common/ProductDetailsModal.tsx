@@ -14,15 +14,19 @@ interface ProductDetailsModalProps {
   product: Product | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  debug?: boolean;
 }
 
 
-export function ProductDetailsModal({ product, open, onOpenChange }: ProductDetailsModalProps) {
+export function ProductDetailsModal({ product, open, onOpenChange, debug }: ProductDetailsModalProps) {
   const { addToCart } = useCartStore();
   const { isAuthenticated } = useAuthStore();
   const [showSpecs, setShowSpecs] = React.useState(false);
   const [showReviews, setShowReviews] = React.useState(false);
 
+  if (debug) {
+    console.log('DEBUG: ProductDetailsModal', { product, open });
+  }
   if (!product) return null;
 
   const handleAddToCart = async () => {
@@ -47,6 +51,8 @@ export function ProductDetailsModal({ product, open, onOpenChange }: ProductDeta
       open={open}
       onOpenChange={onOpenChange}
       size="xl"
+      title={product?.name || 'Product Details'}
+      description={product?.description || 'Detailed information about the product.'}
       className="max-w-full sm:max-w-lg md:max-w-2xl lg:max-w-4xl w-full p-2 sm:p-6 rounded-2xl overflow-y-auto max-h-[90vh] relative"
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 overflow-y-auto pb-24" style={{ maxHeight: '75vh' }}>

@@ -126,6 +126,8 @@ export function ProductsPage() {
     );
   }
 
+  // Debug log for modal state and selected product
+  console.log('DEBUG: selectedProduct', selectedProduct, 'isModalOpen', isModalOpen);
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
@@ -387,6 +389,8 @@ export function ProductsPage() {
         product={selectedProduct}
         open={isModalOpen}
         onOpenChange={setIsModalOpen}
+        // Debug prop
+        debug={true}
       />
     </div>
   );
