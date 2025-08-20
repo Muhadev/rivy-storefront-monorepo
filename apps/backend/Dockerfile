@@ -45,7 +45,7 @@ RUN chmod +x entrypoint.sh
 USER backend
 
 # Expose port
-EXPOSE 4000
+EXPOSE ${PORT}
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
