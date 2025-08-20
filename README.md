@@ -230,7 +230,7 @@ Welcome to the Full-Stack Technical Assessment! You're working at a fintech comp
 
 ## Entity Relationship Diagram
 
-![Rivy Storefront ER Diagram](./apps/frontend/public/assests/mih.png)
+![Rivy Storefront ER Diagram](./apps/frontend/public/assests/RivyERd.png)
 
 The ER diagram above illustrates the relationships between core entities: Users, Products, Orders, Cart, Reviews, and Discounts.
 

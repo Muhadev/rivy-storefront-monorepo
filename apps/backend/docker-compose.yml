@@ -6,7 +6,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - "${POSTGRES_PORT}:5432"
+      - "${POSTGRES_PORT}:{POSTGRES_PORT}"
     volumes:
       - db_data:/var/lib/postgresql/data
     healthcheck:
@@ -27,7 +27,7 @@ services:
       db:
         condition: service_healthy
     ports:
-      - "${BACKEND_PORT}:4000"
+      - "${BACKEND_PORT}:{BACKEND_PORT}"
     environment:
       - NODE_ENV=${BACKEND_NODE_ENV}
       - DATABASE_URL=${BACKEND_DATABASE_URL}

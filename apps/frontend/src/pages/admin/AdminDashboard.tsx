@@ -1,11 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
-import { Package, ShoppingCart, Users, DollarSign, TrendingUp, AlertCircle, Plus, Star, Settings } from 'lucide-react';
+import { Package, ShoppingCart, Users, DollarSign, TrendingUp, AlertCircle, Star, Settings, Home } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { adminApi } from '@/repositories/admin.repository';
 
 export function AdminDashboard() {
+  const location = useLocation();
   const { data: dashboardData, isLoading, error } = useQuery({
     queryKey: ['admin-dashboard'],
     queryFn: adminApi.getDashboardSummary,
@@ -64,7 +65,7 @@ export function AdminDashboard() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-20">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -73,10 +74,10 @@ export function AdminDashboard() {
         </div>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+      {/* Stats Grid - horizontal scroll on mobile */}
+      <div className="flex gap-4 overflow-x-auto md:grid md:grid-cols-2 lg:grid-cols-5 md:gap-6">
         {stats.map((stat) => (
-          <Card key={stat.name}>
+          <Card key={stat.name} className="min-w-[160px] md:min-w-0">
             <CardContent className="p-6">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
@@ -93,7 +94,6 @@ export function AdminDashboard() {
                       </div>
                       <div className="ml-2 flex items-baseline text-sm font-semibold text-green-600">
                         <TrendingUp className="h-4 w-4 mr-1" />
-                        {/* For demo, show +% */}
                         +5%
                       </div>
                     </dd>
@@ -105,7 +105,7 @@ export function AdminDashboard() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Recent Orders */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
@@ -119,13 +119,13 @@ export function AdminDashboard() {
           <CardContent>
             <div className="space-y-4">
               {recentOrders.map((order: any) => (
-                <div key={order.id} className="flex items-center justify-between border-b border-gray-200 pb-4 last:border-b-0 last:pb-0">
+                <div key={order.id} className="flex flex-col md:flex-row md:items-center md:justify-between border-b border-gray-200 pb-4 last:border-b-0 last:pb-0">
                   <div>
                     <p className="font-medium text-gray-900">Order #{order.id}</p>
                     <p className="text-sm text-gray-600">{order.address}</p>
                     <p className="text-xs text-gray-500">{order.createdAt}</p>
                   </div>
-                  <div className="text-right">
+                  <div className="text-right mt-2 md:mt-0">
                     <p className="font-medium text-gray-900">${order.total}</p>
                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                       order.status === 'delivered' ? 'bg-green-100 text-green-800' :
@@ -157,12 +157,12 @@ export function AdminDashboard() {
           <CardContent>
             <div className="space-y-4">
               {lowStockProducts.map((item: any) => (
-                <div key={item.product?.id || item.id} className="flex items-center justify-between border-b border-gray-200 pb-4 last:border-b-0 last:pb-0">
+                <div key={item.product?.id || item.id} className="flex flex-col md:flex-row md:items-center md:justify-between border-b border-gray-200 pb-4 last:border-b-0 last:pb-0">
                   <div>
                     <p className="font-medium text-gray-900">{item.product?.name ?? item.name}</p>
                     <p className="text-sm text-gray-600">Threshold: 5 units</p>
                   </div>
-                  <div className="text-right">
+                  <div className="text-right mt-2 md:mt-0">
                     <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
                       {item.product?.stock ?? item.stock} left
                     </span>
@@ -173,6 +173,34 @@ export function AdminDashboard() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Bottom Navigation Bar for Admin - mobile only */}
+      <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-white border-t border-gray-200 flex justify-between items-center px-4 py-2 shadow-lg">
+        <Link to="/admin" className={`flex flex-col items-center text-gray-700 hover:text-green-600 ${location.pathname === '/admin' ? 'text-green-600' : ''}`}>
+          <Home className="h-6 w-6" />
+          <span className="text-xs">Dashboard</span>
+        </Link>
+        <Link to="/admin/products" className={`flex flex-col items-center text-gray-700 hover:text-green-600 ${location.pathname.startsWith('/admin/products') ? 'text-green-600' : ''}`}>
+          <Package className="h-6 w-6" />
+          <span className="text-xs">Products</span>
+        </Link>
+        <Link to="/admin/orders" className={`flex flex-col items-center text-gray-700 hover:text-green-600 ${location.pathname.startsWith('/admin/orders') ? 'text-green-600' : ''}`}>
+          <ShoppingCart className="h-6 w-6" />
+          <span className="text-xs">Orders</span>
+        </Link>
+        <Link to="/admin/customers" className={`flex flex-col items-center text-gray-700 hover:text-green-600 ${location.pathname.startsWith('/admin/customers') ? 'text-green-600' : ''}`}>
+          <Users className="h-6 w-6" />
+          <span className="text-xs">Customers</span>
+        </Link>
+        <Link to="/admin/discounts" className={`flex flex-col items-center text-gray-700 hover:text-green-600 ${location.pathname.startsWith('/admin/discounts') ? 'text-green-600' : ''}`}>
+          <DollarSign className="h-6 w-6" />
+          <span className="text-xs">Discounts</span>
+        </Link>
+        <Link to="/admin/profile" className={`flex flex-col items-center text-gray-700 hover:text-green-600 ${location.pathname.startsWith('/admin/profile') ? 'text-green-600' : ''}`}>
+          <Settings className="h-6 w-6" />
+          <span className="text-xs">Profile</span>
+        </Link>
+      </nav>
     </div>
   );
 }

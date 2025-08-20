@@ -3,9 +3,11 @@ import { useReviewStore } from '@/stores/review.store';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Star, Trash2, Edit } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { Package, ShoppingCart, Users, DollarSign, Settings, Home } from 'lucide-react';
 
 export function AdminReviews() {
+  const location = useLocation();
   const { reviews, fetchReviews, deleteReview, isLoading } = useReviewStore();
 
   useEffect(() => {
@@ -13,7 +15,7 @@ export function AdminReviews() {
   }, [fetchReviews]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-20">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold text-gray-900">Reviews</h1>
         <Link to="/admin">
@@ -67,6 +69,33 @@ export function AdminReviews() {
           )}
         </CardContent>
       </Card>
+      {/* Bottom Navigation Bar for Admin - mobile only */}
+      <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-white border-t border-gray-200 flex justify-between items-center px-4 py-2 shadow-lg">
+        <Link to="/admin" className={`flex flex-col items-center text-gray-700 hover:text-green-600 ${location.pathname === '/admin' ? 'text-green-600' : ''}`}>
+          <Home className="h-6 w-6" />
+          <span className="text-xs">Dashboard</span>
+        </Link>
+        <Link to="/admin/products" className={`flex flex-col items-center text-gray-700 hover:text-green-600 ${location.pathname.startsWith('/admin/products') ? 'text-green-600' : ''}`}>
+          <Package className="h-6 w-6" />
+          <span className="text-xs">Products</span>
+        </Link>
+        <Link to="/admin/orders" className={`flex flex-col items-center text-gray-700 hover:text-green-600 ${location.pathname.startsWith('/admin/orders') ? 'text-green-600' : ''}`}>
+          <ShoppingCart className="h-6 w-6" />
+          <span className="text-xs">Orders</span>
+        </Link>
+        <Link to="/admin/customers" className={`flex flex-col items-center text-gray-700 hover:text-green-600 ${location.pathname.startsWith('/admin/customers') ? 'text-green-600' : ''}`}>
+          <Users className="h-6 w-6" />
+          <span className="text-xs">Customers</span>
+        </Link>
+        <Link to="/admin/discounts" className={`flex flex-col items-center text-gray-700 hover:text-green-600 ${location.pathname.startsWith('/admin/discounts') ? 'text-green-600' : ''}`}>
+          <DollarSign className="h-6 w-6" />
+          <span className="text-xs">Discounts</span>
+        </Link>
+        <Link to="/admin/profile" className={`flex flex-col items-center text-gray-700 hover:text-green-600 ${location.pathname.startsWith('/admin/profile') ? 'text-green-600' : ''}`}>
+          <Settings className="h-6 w-6" />
+          <span className="text-xs">Profile</span>
+        </Link>
+      </nav>
     </div>
   );
 }
