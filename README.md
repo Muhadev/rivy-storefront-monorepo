@@ -33,6 +33,41 @@ Rivy Storefront is a modern e-commerce platform featuring:
 
 ---
 
+## Getting Started
+
+### Prerequisites
+- Docker & Docker Compose
+- Node.js (v18+ recommended)
+- npm
+
+### Setup Instructions
+1. **Clone the repository:**
+	```bash
+	git clone https://github.com/Muhadev/rivy-storefront-monorepo.git
+	cd rivy-storefront-monorepo
+	```
+2. **Copy environment files:**
+	```bash
+	cp apps/backend/.env.example apps/backend/.env
+	cp apps/frontend/.env.example apps/frontend/.env
+	```
+3. **Start all services (root compose):**
+	```bash
+	docker compose up --build
+	```
+4. **Start backend only (with nginx, db):**
+	```bash
+	cd apps/backend
+	docker compose up --build
+	```
+
+**Access Points:**
+- API: [http://localhost:4000/api](http://localhost:4000/api)
+- OpenAPI Docs: [http://localhost:4000/api/v1/docs](http://localhost:4000/api/v1/docs)
+- Frontend: [http://localhost:5173](http://localhost:5173)
+
+---
+
 ### Why a Monorepo?
 
 > **Note:** This project is intentionally structured as a single repository (monorepo) for both frontend and backend. While separating frontend and backend into distinct repositories is considered best practice for production systems, a monorepo was chosen here to make navigation easier for reviewers and assessment stakeholders. This approach allows for:
