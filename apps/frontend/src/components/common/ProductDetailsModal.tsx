@@ -16,12 +16,9 @@ interface ProductDetailsModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
-
 export function ProductDetailsModal({ product, open, onOpenChange }: ProductDetailsModalProps) {
   const { addToCart } = useCartStore();
   const { isAuthenticated } = useAuthStore();
-  const [showSpecs, setShowSpecs] = React.useState(false);
-  const [showReviews, setShowReviews] = React.useState(false);
 
   if (!product) return null;
 
@@ -30,6 +27,7 @@ export function ProductDetailsModal({ product, open, onOpenChange }: ProductDeta
       toast.error('Please login to add items to cart');
       return;
     }
+
     try {
       await addToCart(product.id, 1);
       toast.success('Added to cart successfully!');
@@ -47,9 +45,9 @@ export function ProductDetailsModal({ product, open, onOpenChange }: ProductDeta
       open={open}
       onOpenChange={onOpenChange}
       size="xl"
-      className="max-w-full sm:max-w-lg md:max-w-2xl lg:max-w-4xl w-full p-2 sm:p-6 rounded-2xl overflow-y-auto max-h-[90vh] relative"
+      className="max-w-full sm:max-w-lg md:max-w-2xl lg:max-w-4xl w-full p-2 sm:p-6 rounded-2xl overflow-y-auto max-h-[90vh]"
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 overflow-y-auto pb-24" style={{ maxHeight: '75vh' }}>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 overflow-y-auto" style={{ maxHeight: '75vh' }}>
         {/* Product Image */}
         <div className="aspect-square overflow-hidden rounded-lg bg-gray-50 flex items-center justify-center">
           <img
@@ -91,20 +89,15 @@ export function ProductDetailsModal({ product, open, onOpenChange }: ProductDeta
               <span className="text-sm text-gray-600">
                 {product.averageRating.toFixed(1)} ({product.reviewCount || 0} reviews)
               </span>
-              <button
-                className="ml-2 text-xs text-blue-600 underline"
-                onClick={() => setShowReviews((v) => !v)}
-              >
-                {showReviews ? 'Hide Reviews' : 'Show Reviews'}
-              </button>
             </div>
           )}
 
-          {/* Price & Stock */}
+          {/* Price */}
           <div className="space-y-1">
             <p className="text-2xl sm:text-3xl font-bold text-gray-900">
               {formatPrice(product.price)}
             </p>
+            {/* Stock Status */}
             <div className="flex items-center space-x-2">
               {isOutOfStock ? (
                 <Badge variant="destructive">Out of Stock</Badge>
@@ -124,54 +117,45 @@ export function ProductDetailsModal({ product, open, onOpenChange }: ProductDeta
             </p>
           </div>
 
-          {/* Specifications - Collapsible */}
+          {/* Specifications */}
           {product.specifications && Object.keys(product.specifications).length > 0 && (
             <div className="space-y-2">
-              <button
-                className="text-xs text-blue-600 underline mb-1"
-                onClick={() => setShowSpecs((v) => !v)}
-              >
-                {showSpecs ? 'Hide Specifications' : 'Show Specifications'}
-              </button>
-              {showSpecs && (
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  {Object.entries(product.specifications).map(([key, value]) => (
-                    <div key={key} className="flex justify-between">
-                      <span className="text-gray-600 capitalize">{key}:</span>
-                      <span className="font-medium">{value}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <h3 className="font-semibold text-gray-900">Specifications</h3>
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                {Object.entries(product.specifications).map(([key, value]) => (
+                  <div key={key} className="flex justify-between">
+                    <span className="text-gray-600 capitalize">{key}:</span>
+                    <span className="font-medium">{value}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
+
+          {/* Add to Cart */}
+          <div className="pt-4">
+            {!isOutOfStock ? (
+              <Button
+                onClick={handleAddToCart}
+                className="w-full bg-green-600 hover:bg-green-700"
+                size="lg"
+              >
+                <ShoppingCart className="h-5 w-5 mr-2" />
+                Add to Cart
+              </Button>
+            ) : (
+              <Button disabled className="w-full" size="lg">
+                Out of Stock
+              </Button>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Sticky Add to Cart Button */}
-      <div className="fixed left-0 right-0 bottom-0 z-50 p-4 bg-white border-t border-gray-200 flex justify-center">
-        {!isOutOfStock ? (
-          <Button
-            onClick={handleAddToCart}
-            className="w-full max-w-md bg-green-600 hover:bg-green-700"
-            size="lg"
-          >
-            <ShoppingCart className="h-5 w-5 mr-2" />
-            Add to Cart
-          </Button>
-        ) : (
-          <Button disabled className="w-full max-w-md" size="lg">
-            Out of Stock
-          </Button>
-        )}
+      {/* Reviews Section */}
+      <div className="mt-8 pt-8 border-t border-gray-200 overflow-y-auto" style={{ maxHeight: '20vh' }}>
+        <ReviewsList productId={product.id} />
       </div>
-
-      {/* Reviews Section - Collapsible */}
-      {showReviews && (
-        <div className="mt-8 pt-8 border-t border-gray-200 overflow-y-auto" style={{ maxHeight: '20vh' }}>
-          <ReviewsList productId={product.id} />
-        </div>
-      )}
     </Modal>
   );
 }
