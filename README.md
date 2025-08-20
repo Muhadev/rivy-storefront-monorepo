@@ -53,8 +53,10 @@ Rivy Storefront is a modern e-commerce platform featuring:
 	```
 3. **Start all services (root compose):**
 	```bash
-	docker compose up --build
-	NOTE: if you are on a window system run up.bat to spin off both the backend and frontend on the docker, then you can bring it down with the down.bat after you are done
+	NOTE:
+	Windows User: if you are on a window system run up.bat to spin off both the backend and frontend on the docker, then you can bring it down with the down.bat after you are done
+	Linux/Macos: if you are on a Linux syatem/ Window system run up.sh to spin off both the backend and frontend on the docker, then you can bring it down with the down.sh after you are done
+
 	```
 4. **Start backend only (with nginx, db):**
 	```bash
