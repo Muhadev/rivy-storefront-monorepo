@@ -23,22 +23,33 @@ function getRandomCategoryId() {
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    // Seed categories
-    await queryInterface.bulkInsert("categories", categories.map((cat) => ({
-      ...cat,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    })), {});
+    // Upsert categories
+    for (const cat of categories) {
+      await queryInterface.sequelize.query(`
+        INSERT INTO categories (name, description, "createdAt", "updatedAt")
+        VALUES ('${cat.name}', '${cat.description}', NOW(), NOW())
+        ON CONFLICT (name) DO UPDATE SET
+          description = EXCLUDED.description,
+          "updatedAt" = NOW();
+      `);
+    }
+
+    // Get category IDs by name
+    const [catRows] = await queryInterface.sequelize.query('SELECT id, name FROM categories;');
+    const catMap = Object.fromEntries(catRows.map(row => [row.name, row.id]));
 
     // Seed products
+    const catNames = Object.keys(catMap);
     const products = [];
     for (let i = 1; i <= 55; i++) {
+      // Assign products to categories in round-robin fashion
+      const catName = catNames[i % catNames.length];
       products.push({
         name: `Demo Product ${i}`,
         description: `Description for Demo Product ${i}`,
         price: (100 + Math.random() * 900).toFixed(2),
         stock: Math.floor(Math.random() * 100) + 1,
-        categoryId: getRandomCategoryId(),
+        categoryId: catMap[catName],
         imageUrl: getRandomImage(),
         createdBy: 1, // Use adminId 1 for demo
         createdAt: new Date(),

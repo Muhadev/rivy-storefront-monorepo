@@ -22,39 +22,27 @@ module.exports = {
           "updatedAt" = NOW();
       `);
 
-    // Insert Categories
-    await queryInterface.bulkInsert('categories', [
-      {
-        name: 'Solar Panels',
-        description: 'High-efficiency solar panels for renewable energy',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
-        name: 'Electronics',
-        description: 'Electronic devices and accessories',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
-        name: 'Batteries',
-        description: 'Energy storage solutions and battery packs',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
-        name: 'Inverters',
-        description: 'Power inverters and converters',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
-        name: 'Accessories',
-        description: 'Solar system accessories and components',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      }
-    ], {});
+    // Upsert Categories
+    const categories = [
+      { name: 'Solar Panels', description: 'High-efficiency solar panels for renewable energy' },
+      { name: 'Electronics', description: 'Electronic devices and accessories' },
+      { name: 'Batteries', description: 'Energy storage solutions and battery packs' },
+      { name: 'Inverters', description: 'Power inverters and converters' },
+      { name: 'Accessories', description: 'Solar system accessories and components' }
+    ];
+    for (const cat of categories) {
+      await queryInterface.sequelize.query(`
+        INSERT INTO categories (name, description, "createdAt", "updatedAt")
+        VALUES ('${cat.name}', '${cat.description}', NOW(), NOW())
+        ON CONFLICT (name) DO UPDATE SET
+          description = EXCLUDED.description,
+          "updatedAt" = NOW();
+      `);
+    }
+
+    // Get category IDs by name
+    const [catRows] = await queryInterface.sequelize.query('SELECT id, name FROM categories;');
+    const catMap = Object.fromEntries(catRows.map(row => [row.name, row.id]));
 
     // Insert Products (referencing category IDs)
     await queryInterface.bulkInsert('products', [
