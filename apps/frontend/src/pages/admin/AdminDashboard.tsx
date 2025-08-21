@@ -140,7 +140,7 @@ export function AdminDashboard() {
               {paginatedOrders.map((order: any) => (
                 <div key={order.id} className="flex flex-col md:flex-row md:items-center md:justify-between border-b border-gray-200 pb-4 last:border-b-0 last:pb-0">
                   <div>
-                    <p className="font-medium text-gray-900">Order #{order.id}</p>
+                    <p className="font-medium text-gray-900">Order No{order.id}</p>
                     <p className="text-sm text-gray-600">{order.address}</p>
                     <p className="text-xs text-gray-500">{order.createdAt}</p>
                   </div>

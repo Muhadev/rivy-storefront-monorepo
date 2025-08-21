@@ -41,32 +41,9 @@ export interface AdminProductsResponse {
 }
 
 export const adminApi = {
-  // Dashboard summary using current endpoints
+  // Dashboard summary using backend admin endpoint
   getDashboardSummary: async (): Promise<AdminDashboardData> => {
-    const [productsRes, ordersRes, reviewsRes, discountsRes, usersRes] = await Promise.all([
-      apiClient.get(ENDPOINTS.PRODUCTS.LIST) as any,
-      apiClient.get(ENDPOINTS.ORDERS.LIST) as any,
-      apiClient.get(ENDPOINTS.REVIEWS.LIST) as any,
-      apiClient.get(ENDPOINTS.DISCOUNTS.LIST) as any,
-      apiClient.get('/users/') as any, // Direct endpoint since USERS.LIST does not exist for now (updating soon)
-    ]);
-    const products = productsRes.data?.products ?? productsRes.data ?? [];
-    const orders = ordersRes.data?.orders ?? ordersRes.data ?? [];
-    const reviews = reviewsRes.data?.reviews ?? reviewsRes.data ?? [];
-    const discounts = discountsRes.data?.discounts ?? discountsRes.data ?? [];
-    const users = usersRes.data?.users ?? usersRes.data ?? [];
-
-    return {
-      stats: {
-        totalProducts: products.length,
-        totalOrders: orders.length,
-        totalCustomers: users.length,
-        totalReviews: reviews.length,
-        totalDiscounts: discounts.length,
-      },
-      recentOrders: orders.slice(0, 5),
-      lowStockProducts: products.filter((p: any) => typeof p.stock === 'number' && p.stock <= 5),
-    };
+    return await apiClient.get('/admin/dashboard');
   },
 
   // List all users (admin only)
