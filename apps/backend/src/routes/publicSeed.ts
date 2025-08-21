@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { sequelize } from '../db/index';
-import { Product, Category } from '../models';
-import { categories, premiumProducts } from '../utils/demo-data';
+import { Product, Category, User } from '../models';
+import { categories, premiumProducts, users} from '../utils/demo-data';
 
 const router = Router();
 
@@ -13,14 +13,19 @@ const getRandomCategories = (categories: any[], count: number = 1): any[] => {
 // Change POST to GET for assessment/review purposes
 router.get('/seed-db', async (req: Request, res: Response) => {
   try {
-    console.log('🔄 Resetting database...');
+    console.log('Resetting database...');
     
     // Force sync to recreate all tables
     await sequelize.sync({ force: true });
-    console.log('✅ Database tables recreated');
+    console.log('Database tables recreated');
+
+    // Step 1: Seed users
+    console.log('Seeding users...');
+    const createdUsers = await User.bulkCreate(users, { returning: true });
+    console.log(`${createdUsers.length} users seeded`);
 
     // Step 1: Create categories first and wait for completion
-    console.log('🌱 Seeding categories...');
+    console.log('Seeding categories...');
     const createdCategories = await Category.bulkCreate(categories, { 
       returning: true
     });
@@ -38,9 +43,9 @@ router.get('/seed-db', async (req: Request, res: Response) => {
     const createdProducts = await Product.bulkCreate(productsWithCategories, {
       returning: true
     });
-    console.log(`✅ ${createdProducts.length} products seeded`);
+    console.log(`${createdProducts.length} products seeded`);
 
-    console.log('✅ Demo data seeded successfully');
+    console.log('Demo data seeded successfully');
     
     res.json({ 
       message: 'Database reset and seeders executed successfully.',

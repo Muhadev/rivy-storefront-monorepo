@@ -7,10 +7,38 @@ const imageUrls = [
   "https://pwrth.mahasib.com/laswndwnh/porta/mwh_anz/PIOdua0bqg.png"
 ];
 
+interface User {
+  name: string;
+  email: string;
+  passwordHash: string;
+  role: 'admin' | 'customer';
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 interface Category {
   name: string;
   description: string;
 }
+
+export const users: User[] = [
+  {
+    name: 'Alice Admin',
+    email: 'alice.admin@example.com',
+    passwordHash: bcrypt.hashSync('adminpass123', 10),
+    role: 'admin',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    name: 'Bob Customer',
+    email: 'bob.customer@example.com',
+    passwordHash: bcrypt.hashSync('customerpass456', 10),
+    role: 'customer',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+];
 
 export const categories: Category[] = [
   { name: 'Solar Panels', description: 'High-efficiency solar panels for renewable energy' },
@@ -149,5 +177,6 @@ interface CategoryRow {
 // Export for Sequelize CLI compatibility (if needed)
 module.exports = {
   categories,
-  premiumProducts
+  premiumProducts,
+  users,
 };
