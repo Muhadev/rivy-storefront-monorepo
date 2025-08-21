@@ -53,7 +53,7 @@ Rivy Storefront is a modern e-commerce platform featuring:
 	```
 3. ## Start all services (root compose)
 
-	You can spin up both the backend and frontend services using the provided scripts.  
+	You can spin up both the backend and frontend services using the provided scripts.
 	Choose the appropriate script for your operating system.
 
 	---
@@ -62,7 +62,7 @@ Rivy Storefront is a modern e-commerce platform featuring:
 	Run the file to start both backend and frontend services:
 
 	```bash
-	cd rivy-storefront-monorepo
+	Make sure you on the root of the folder before running the commmand below
 	up.bat
 	```
 	
@@ -70,7 +70,7 @@ Rivy Storefront is a modern e-commerce platform featuring:
 	To bring everything down:
 
 	```bash
-	cd rivy-storefront-monorepo
+	Make sure you on the root of the folder before running the commmand below
 	down.bat
 	```
 	---
