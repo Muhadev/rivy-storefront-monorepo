@@ -43,9 +43,9 @@ export function AdminProducts() {
           page: res.pagination.page,
           limit: res.pagination.limit,
           total: res.pagination.total,
-          totalPages: res.pagination.pages,
-          hasPrev: res.pagination.page > 1,
-          hasNext: res.pagination.page < res.pagination.pages,
+          totalPages: res.pagination.totalPages,
+          hasPrev: res.pagination.hasPrevious,
+          hasNext: res.pagination.hasNext,
         }
       };
     },

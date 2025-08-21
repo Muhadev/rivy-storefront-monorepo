@@ -76,11 +76,11 @@ export function AdminOrders() {
                         <td className="px-6 py-4 whitespace-nowrap">{new Date(order.createdAt).toLocaleDateString()}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-right">
                           <Link to={`/orders/${order.id}`}>
-                            <Button variant="outline" size="sm">View</Button>
+                            <Button variant="outline" size="sm">View (comingg soon)</Button>
                           </Link>
                           {order.status === 'pending' && (
                             <Button variant="destructive" size="sm" className="ml-2" onClick={() => cancelOrder(order.id)}>
-                              Cancel
+                              Cancel (coming soon)
                             </Button>
                           )}
                           {order.status === 'processing' && (

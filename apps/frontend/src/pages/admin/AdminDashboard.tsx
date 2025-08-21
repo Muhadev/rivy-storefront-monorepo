@@ -130,9 +130,9 @@ export function AdminDashboard() {
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Recent Orders</CardTitle>
             <Link to="/orders">
-              <Button variant="outline" size="sm">
+              {/* <Button variant="outline" size="sm">
                 View All
-              </Button>
+              </Button> */}
             </Link>
           </CardHeader>
           <CardContent>
@@ -192,9 +192,9 @@ export function AdminDashboard() {
               Low Stock Alert
             </CardTitle>
             <Link to="/products">
-              <Button variant="outline" size="sm">
+              {/* <Button variant="outline" size="sm">
                 Manage Stock
-              </Button>
+              </Button> */}
             </Link>
           </CardHeader>
           <CardContent>
