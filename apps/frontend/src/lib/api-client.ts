@@ -10,12 +10,11 @@ interface ExtendedAxiosRequestConfig extends InternalAxiosRequestConfig {
 
 class ApiClient {
   private client: AxiosInstance;
-  private retryCount = 0;
+  // private retryCount = 0;
 
   constructor() {
     this.client = axios.create({
       baseURL: API_CONFIG.BASE_URL,
-      timeout: API_CONFIG.TIMEOUT,
       headers: {
         'Content-Type': 'application/json',
       },
@@ -48,7 +47,7 @@ class ApiClient {
           return Promise.reject(error);
         }
         if (error.response?.status === 429) {
-          toast.error('Too many requests. Please try again later.');
+          // toast.error('Too many requests. Please try again later.');
           return Promise.reject(error);
         }
         this.handleError(error);
@@ -65,7 +64,7 @@ class ApiClient {
         toast.error(`Validation Error: ${message}`);
         break;
       case 403:
-        toast.error('Access denied. Insufficient permissions.');
+        // toast.error('Access denied. Insufficient permissions.');
         break;
       case 404:
         toast.error('Resource not found.');
@@ -74,11 +73,11 @@ class ApiClient {
         toast.error(`Conflict: ${message}`);
         break;
       case 500:
-        toast.error('Server error. Please try again later.');
+        // toast.error('Server error. Please try again later.');
         break;
       default:
         if (!error.response) {
-          toast.error('Network error. Please check your connection.');
+          // toast.error('Network error. Please check your connection.');
         } else {
           toast.error(message);
         }
