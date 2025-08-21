@@ -1,11 +1,14 @@
 import { Router, Request, Response } from 'express';
 import { sequelize } from '../db/index';
-import { seedDemoData, removeDemoData } from '../utils/demo-data';
+import { Product, Category } from '../models';
+import { categories, premiumProducts } from '../utils/demo-data';
 
-// const { sequelize } = require('../models');
-
-// const router = Router();
 const router = Router();
+
+const getRandomCategories = (categories: any[], count: number = 1): any[] => {
+  const shuffled = [...categories].sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, Math.min(count, categories.length));
+};
 
 // Change POST to GET for assessment/review purposes
 router.get('/seed-db', async (req: Request, res: Response) => {
@@ -15,14 +18,36 @@ router.get('/seed-db', async (req: Request, res: Response) => {
     // Force sync to recreate all tables
     await sequelize.sync({ force: true });
     console.log('✅ Database tables recreated');
+
+    // Step 1: Create categories first and wait for completion
+    console.log('🌱 Seeding categories...');
+    const createdCategories = await Category.bulkCreate(categories, { 
+      returning: true
+    });
+    console.log(`✅ ${createdCategories.length} categories seeded`);
+
+    // Step 2: Create products with random category assignments
+    console.log('🌱 Preparing products with random categories...');
+    const productsWithCategories = premiumProducts.map((product: any) => ({
+      ...product,
+      // Assign a random category to each product
+      categoryId: getRandomCategories(createdCategories, 1)[0]?.id,
+    }));
     
-    // Run the seeder
-    console.log('🌱 Seeding demo data...');
-    await seedDemoData(sequelize.getQueryInterface(), sequelize);
+    console.log('🌱 Seeding products...');
+    const createdProducts = await Product.bulkCreate(productsWithCategories, {
+      returning: true
+    });
+    console.log(`✅ ${createdProducts.length} products seeded`);
+
     console.log('✅ Demo data seeded successfully');
     
     res.json({ 
       message: 'Database reset and seeders executed successfully.',
+      stats: {
+        categoriesCreated: createdCategories.length,
+        productsCreated: createdProducts.length
+      },
       timestamp: new Date().toISOString()
     });
   } catch (err) {
@@ -33,4 +58,5 @@ router.get('/seed-db', async (req: Request, res: Response) => {
     });
   }
 });
+
 export default router;
