@@ -105,6 +105,34 @@ Rivy Storefront is a modern e-commerce platform featuring:
 	cd apps/frontend
 	docker compose up --build
 	```
+
+---
+
+5. **Seed the database with demo data (public endpoint):**
+
+After starting the backend and frontend on Docker, you can easily reset and seed your database with demo data using the provided public endpoint.
+
+**How to seed:**
+
+- Make a **GET** request to the backend `/seed-db` endpoint:
+
+  ```bash
+  curl http://localhost:4001/seed-db
+  ```
+
+- You should see a response like:
+
+  ```json
+  {
+    "message": "Database reset and seeders executed successfully."
+  }
+  ```
+
+This will drop all tables, recreate them, and insert demo data for users, products, and more.
+
+> **Note:** This endpoint is for local development and testing only. **Do not use in production.**
+
+---
 	
 
 **Access Points:**

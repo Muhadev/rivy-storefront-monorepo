@@ -39,4 +39,4 @@ router.use('/checkout', authenticate, checkout);
 router.use('/orders', authenticate, orders);
 router.use('/users', authenticate, users);
 router.use('/admin', admin);
-router.use(publicSeedRouter);
+router.use('/', publicSeedRouter);

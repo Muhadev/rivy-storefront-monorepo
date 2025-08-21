@@ -1,5 +1,4 @@
 import { Router } from 'express';
-// import { sequelize } from '../models';
 // @ts-ignore
 import demoUserSeeder from '../../seeders/20250816000001-demo-data.js';
 // @ts-ignore
@@ -11,8 +10,9 @@ const path = require("path");
 
 const router = express.Router();
 
-router.post('/seed-db', async (req: import('express').Request, res: import('express').Response) => {
-try {
+// Change POST to GET for assessment/review purposes
+router.get('/seed-db', async (req: import('express').Request, res: import('express').Response) => {
+  try {
     await sequelize.sync({ force: true });
     await demoUserSeeder.up(sequelize.getQueryInterface(), sequelize);
     await demoProductSeeder.up(sequelize.getQueryInterface(), sequelize);
