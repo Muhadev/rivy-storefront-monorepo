@@ -4,8 +4,9 @@ import demoUserSeeder from '../../seeders/20250816000001-demo-data.js';
 // @ts-ignore
 import demoProductSeeder from '../../seeders/20250818000002-demo-data.js';
 
+// import { sequelize } from '../models';
 const express = require("express");
-const { sequelize } = require("./models");
+const { sequelize } = require("../models");
 const path = require("path");
 
 const router = express.Router();
