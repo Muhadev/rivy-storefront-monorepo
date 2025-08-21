@@ -79,7 +79,7 @@ Rivy Storefront is a modern e-commerce platform featuring:
 	Run the file to start both backend and frontend services:
 
 	```bash
-	cd rivy-storefront-monorepo - root of the folder
+	Make sure you on the root of the folder before running the commmand below
 	chmod +x up.sh
 	./up.sh
 	```
@@ -88,7 +88,7 @@ Rivy Storefront is a modern e-commerce platform featuring:
 	To bring everything down:
 
 	```bash
-	cd rivy-storefront-monorepo - root of the folder
+	Make sure you on the root of the folder before running the commmand below
 	chmod +x down.sh
 	./down.sh
 	```
