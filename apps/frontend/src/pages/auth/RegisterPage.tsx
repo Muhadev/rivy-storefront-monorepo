@@ -46,7 +46,7 @@ export function RegisterPage() {
       const { confirmPassword, ...registerData } = data;
       await registerUser(registerData as RegisterCredentials);
       toast.success('Account created successfully!');
-      navigate('/');
+      navigate('/auth/login');
     } catch (error) {
       toast.error('Registration failed. Please try again.');
     }
