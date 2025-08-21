@@ -1,4 +1,4 @@
-import { Router } from 'express';
+// import { Router } from 'express';
 // @ts-ignore
 import demoUserSeeder from '../../seeders/20250816000001-demo-data.js';
 // @ts-ignore
