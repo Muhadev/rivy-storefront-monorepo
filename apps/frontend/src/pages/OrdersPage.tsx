@@ -146,7 +146,7 @@ function OrderCard({ order }: { order: Order }) {
         </div>
         
         <div className="flex space-x-3">
-          <Link to={`/orders/${order.id}`}>
+          {/* <Link to={`/orders/${order.id}`}>
             <Button variant="outline" size="sm">
               View Details
             </Button>
@@ -156,7 +156,7 @@ function OrderCard({ order }: { order: Order }) {
             <Button variant="destructive" size="sm">
               Cancel Order
             </Button>
-          )}
+          )} */}
           
           {order.status === 'delivered' && (
             <Button variant="outline" size="sm">

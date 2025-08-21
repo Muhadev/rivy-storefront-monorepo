@@ -1,5 +1,6 @@
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Package, ShoppingCart, Users, DollarSign, TrendingUp, AlertCircle, Star, Settings, Home } from 'lucide-react';
+import { Package, ShoppingCart, Users, DollarSign, TrendingUp, AlertCircle, Star, Settings, Home, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Link, useLocation } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -7,41 +8,60 @@ import { adminApi } from '@/repositories/admin.repository';
 
 export function AdminDashboard() {
   const location = useLocation();
+
+  // Pagination state for recent orders
+  const [orderPage, setOrderPage] = useState(1);
+  const ordersPerPage = 5;
+
+  // Pagination state for low stock products
+  const [stockPage, setStockPage] = useState(1);
+  const stockPerPage = 5;
+
   const { data: dashboardData, isLoading, error } = useQuery({
     queryKey: ['admin-dashboard'],
     queryFn: adminApi.getDashboardSummary,
   });
 
+  // Fix stats to use correct dashboardData fields
   const stats = [
     {
       name: 'Total Products',
-      value: dashboardData?.stats.totalProducts || 0,
+      value: dashboardData?.stats?.totalProducts ?? 0,
       icon: Package,
     },
     {
       name: 'Total Orders',
-      value: dashboardData?.stats.totalOrders || 0,
+      value: dashboardData?.stats?.totalOrders ?? 0,
       icon: ShoppingCart,
     },
     {
       name: 'Total Customers',
-      value: dashboardData?.stats.totalCustomers || 0,
+      value: dashboardData?.stats?.totalCustomers ?? 0,
       icon: Users,
     },
     {
       name: 'Discounts',
-      value: dashboardData?.stats.totalDiscounts || 0,
+      value: dashboardData?.stats?.totalDiscounts ?? 0,
       icon: DollarSign,
     },
     {
       name: 'Reviews',
-      value: dashboardData?.stats.totalReviews || 0,
+      value: dashboardData?.stats?.totalReviews ?? 0,
       icon: Star,
     },
   ];
 
-  const recentOrders = dashboardData?.recentOrders || [];
-  const lowStockProducts = dashboardData?.lowStockProducts || [];
+  // Use correct data fields for recent orders and low stock products
+  const recentOrders = dashboardData?.recentOrders ?? [];
+  const lowStockProducts = dashboardData?.lowStockProducts ?? [];
+
+  // Pagination logic for orders
+  const paginatedOrders = recentOrders.slice((orderPage - 1) * ordersPerPage, orderPage * ordersPerPage);
+  const orderTotalPages = Math.ceil(recentOrders.length / ordersPerPage);
+
+  // Pagination logic for low stock products
+  const paginatedStock = lowStockProducts.slice((stockPage - 1) * stockPerPage, stockPage * stockPerPage);
+  const stockTotalPages = Math.ceil(lowStockProducts.length / stockPerPage);
 
   if (isLoading) {
     return (
@@ -117,7 +137,7 @@ export function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {recentOrders.map((order: any) => (
+              {paginatedOrders.map((order: any) => (
                 <div key={order.id} className="flex flex-col md:flex-row md:items-center md:justify-between border-b border-gray-200 pb-4 last:border-b-0 last:pb-0">
                   <div>
                     <p className="font-medium text-gray-900">Order #{order.id}</p>
@@ -137,6 +157,30 @@ export function AdminDashboard() {
                 </div>
               ))}
             </div>
+            {/* Pagination for orders */}
+            {orderTotalPages > 1 && (
+              <div className="flex justify-center items-center gap-2 mt-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={orderPage === 1}
+                  onClick={() => setOrderPage(orderPage - 1)}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <span className="text-sm">
+                  Page {orderPage} of {orderTotalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={orderPage === orderTotalPages}
+                  onClick={() => setOrderPage(orderPage + 1)}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -155,7 +199,7 @@ export function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {lowStockProducts.map((item: any) => (
+              {paginatedStock.map((item: any) => (
                 <div key={item.product?.id || item.id} className="flex flex-col md:flex-row md:items-center md:justify-between border-b border-gray-200 pb-4 last:border-b-0 last:pb-0">
                   <div>
                     <p className="font-medium text-gray-900">{item.product?.name ?? item.name}</p>
@@ -169,6 +213,30 @@ export function AdminDashboard() {
                 </div>
               ))}
             </div>
+            {/* Pagination for low stock products */}
+            {stockTotalPages > 1 && (
+              <div className="flex justify-center items-center gap-2 mt-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={stockPage === 1}
+                  onClick={() => setStockPage(stockPage - 1)}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <span className="text-sm">
+                  Page {stockPage} of {stockTotalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={stockPage === stockTotalPages}
+                  onClick={() => setStockPage(stockPage + 1)}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

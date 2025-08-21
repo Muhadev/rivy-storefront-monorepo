@@ -184,12 +184,14 @@ class AdminController {
 
       res.json({
         products,
-        pagination: {
-          page: Number(page),
-          limit: Number(limit),
-          total: count,
-          pages: Math.ceil(count / Number(limit))
-        }
+          pagination: {
+            page: Number(page),
+            limit: Number(limit),
+            total: count,
+            totalPages: Math.ceil(count / Number(limit)),
+            hasNext: Number(page) < Math.ceil(count / Number(limit)),
+            hasPrevious: Number(page) > 1
+          }
       });
     } catch (err) {
       next(err);
