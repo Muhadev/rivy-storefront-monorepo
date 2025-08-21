@@ -59,7 +59,7 @@ Rivy Storefront is a modern e-commerce platform featuring:
 	---
 
 	### For Windows Users
-	Run the batch file to start both backend and frontend services:
+	Run the file to start both backend and frontend services:
 
 	```bash
 	cd rivy-storefront-monorepo
@@ -76,11 +76,12 @@ Rivy Storefront is a modern e-commerce platform featuring:
 	---
 
 	### For Linux / macOS Users
-	Run the batch file to start both backend and frontend services:
+	Run the file to start both backend and frontend services:
 
 	```bash
 	cd rivy-storefront-monorepo
-	up.sh
+	chmod +x up.sh
+	./up.sh
 	```
 	
 
@@ -88,7 +89,8 @@ Rivy Storefront is a modern e-commerce platform featuring:
 
 	```bash
 	cd rivy-storefront-monorepo
-	down.sh
+	chmod +x down.sh
+	./down.sh
 	```
 	---
 
