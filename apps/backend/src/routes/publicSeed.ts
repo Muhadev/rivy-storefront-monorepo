@@ -1,27 +1,37 @@
-// import { Router } from 'express';
-// @ts-ignore
-import demoUserSeeder from '../../seeders/20250816000001-demo-data.js';
-// @ts-ignore
-import demoProductSeeder from '../../seeders/20250818000002-demo-data.js';
-
+import { Router, Request, Response } from 'express';
 // import { sequelize } from '../models';
-const express = require("express");
-const { sequelize } = require("../models");
-const path = require("path");
+import { seedDemoData, removeDemoData } from '../utils/demo-data';
 
-const router = express.Router();
+
+const { sequelize } = require('../models');
+
+// const router = Router();
+const router = Router();
 
 // Change POST to GET for assessment/review purposes
-router.get('/seed-db', async (req: import('express').Request, res: import('express').Response) => {
+router.get('/seed-db', async (req: Request, res: Response) => {
   try {
+    console.log('🔄 Resetting database...');
+    
+    // Force sync to recreate all tables
     await sequelize.sync({ force: true });
-    await demoUserSeeder.up(sequelize.getQueryInterface(), sequelize);
-    await demoProductSeeder.up(sequelize.getQueryInterface(), sequelize);
-    res.json({ message: 'Database reset and seeders executed successfully.' });
+    console.log('✅ Database tables recreated');
+    
+    // Run the seeder
+    console.log('🌱 Seeding demo data...');
+    await seedDemoData(sequelize.getQueryInterface(), sequelize);
+    console.log('✅ Demo data seeded successfully');
+    
+    res.json({ 
+      message: 'Database reset and seeders executed successfully.',
+      timestamp: new Date().toISOString()
+    });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Failed to reset and seed database.' });
+    console.error('❌ Failed to reset and seed database:', err);
+    res.status(500).json({ 
+      error: 'Failed to reset and seed database.',
+      details: err instanceof Error ? err.message : 'Unknown error'
+    });
   }
 });
-
 export default router;
