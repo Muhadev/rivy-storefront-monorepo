@@ -10,6 +10,7 @@ import users from './users';
 import admin from './admin';
 import { authenticate } from '../middlewares/auth';
 import HealthController from '../controllers/HealthController';
+import publicSeedRouter from './publicSeed';
 // Associations are initialized in app bootstrap; avoid double-initialization here
 
 export const router = Router();
@@ -38,3 +39,4 @@ router.use('/checkout', authenticate, checkout);
 router.use('/orders', authenticate, orders);
 router.use('/users', authenticate, users);
 router.use('/admin', admin);
+router.use(publicSeedRouter);

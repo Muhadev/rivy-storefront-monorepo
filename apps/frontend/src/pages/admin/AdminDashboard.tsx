@@ -10,7 +10,6 @@ export function AdminDashboard() {
   const { data: dashboardData, isLoading, error } = useQuery({
     queryKey: ['admin-dashboard'],
     queryFn: adminApi.getDashboardSummary,
-    // refetchInterval: 30000,
   });
 
   const stats = [
@@ -67,17 +66,17 @@ export function AdminDashboard() {
   return (
     <div className="space-y-6 pb-20">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-2">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
           <p className="text-gray-600">Welcome back! Here's what's happening with your store.</p>
         </div>
       </div>
 
-      {/* Stats Grid - horizontal scroll on mobile */}
-      <div className="flex gap-4 overflow-x-auto md:grid md:grid-cols-2 lg:grid-cols-5 md:gap-6">
+      {/* Stats Grid - responsive */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
         {stats.map((stat) => (
-          <Card key={stat.name} className="min-w-[160px] md:min-w-0">
+          <Card key={stat.name}>
             <CardContent className="p-6">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
@@ -105,7 +104,7 @@ export function AdminDashboard() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Orders */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
