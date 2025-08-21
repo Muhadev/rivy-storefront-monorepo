@@ -136,7 +136,7 @@ export function RegisterPage() {
                       {...register('role')}
                       className="text-green-600 focus:ring-green-500"
                     />
-                    <span className="ml-2 text-sm text-gray-700">Customer</span>
+                    <span className="ml-2 text-sm text-gray-700">Customer (Recommended)</span>
                   </label>
                   <label className="flex items-center">
                     <input
@@ -145,7 +145,7 @@ export function RegisterPage() {
                       {...register('role')}
                       className="text-green-600 focus:ring-green-500"
                     />
-                    <span className="ml-2 text-sm text-gray-700">Admin</span>
+                    <span className="ml-2 text-sm text-gray-700">Admin </span>
                   </label>
                 </div>
               </div>

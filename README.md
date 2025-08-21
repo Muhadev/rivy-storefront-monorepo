@@ -51,23 +51,50 @@ Rivy Storefront is a modern e-commerce platform featuring:
 	cp apps/backend/.env.example apps/backend/.env
 	cp apps/frontend/.env.example apps/frontend/.env
 	```
-3. **Start all services (root compose):**
-	```bash
-	NOTE:
-	Windows User: if you are on a window system run up.bat to spin off both the backend and frontend on the docker, then you can bring it down with the down.bat after you are done
-	Linux/Macos: if you are on a Linux syatem/ Window system run up.sh to spin off both the backend and frontend on the docker, then you can bring it down with the down.sh after you are done
+3. ## Start all services (root compose)
 
-	```
-4. **Start backend only (with nginx, db):**
+	You can spin up both the backend and frontend services using the provided scripts.  
+	Choose the appropriate script for your operating system.
+
+	---
+
+	### For Windows Users
+	Run the batch file to start both backend and frontend services:
+
+	```bash
+	up.bat
+	
+
+	To bring everything down:
+
+	```bash
+	down.bat
+
+
+
+	### For Linux / macOS Users
+	Run the batch file to start both backend and frontend services:
+
+	```bash
+	./up.sh
+
+	To bring everything down:
+
+	```bash
+	./down.sh
+
+
+4. **Start frontend and backend only (with nginx, db):**
 	```bash
 	cd apps/backend
 	docker compose up --build
 	```
+	
 
 **Access Points:**
-- API: [http://localhost:4000/api](http://localhost:4000/api)
-- OpenAPI Docs: [http://localhost:4000/api/v1/docs](http://localhost:4000/api/v1/docs)
-- Frontend: [http://localhost:5173](http://localhost:5173)
+- API: [http://localhost:4000/api](http://localhost:4001/api)
+- OpenAPI Docs: [http://localhost:4001/api/v1/docs](http://localhost:4000/api/v1/docs)
+- Frontend: [http://localhost:3000](http://localhost:3000)
 
 ---
 
