@@ -22,14 +22,14 @@ router.get('/seed-db', async (req: Request, res: Response) => {
     // Step 1: Seed users
     console.log('Seeding users...');
     const createdUsers = await User.bulkCreate(users, { returning: true });
-    console.log(${createdUsers.length} users seeded);
+    console.log("${createdUsers.length} users seeded");
 
     // Step 1: Create categories first and wait for completion
     console.log('Seeding categories...');
     const createdCategories = await Category.bulkCreate(categories, { 
       returning: true
     });
-    console.log(✅ ${createdCategories.length} categories seeded);
+    console.log("✅ ${createdCategories.length} categories seeded");
 
     console.log('🌱 Preparing products with random categories...');
     const productsWithCategories = premiumProducts.map((product: any) => ({
@@ -43,7 +43,7 @@ router.get('/seed-db', async (req: Request, res: Response) => {
     const createdProducts = await Product.bulkCreate(productsWithCategories, {
       returning: true
     });
-    console.log(${createdProducts.length} products seeded);
+    console.log("${createdProducts.length} products seeded");
 
     console.log('Demo data seeded successfully');
     
