@@ -62,26 +62,35 @@ Rivy Storefront is a modern e-commerce platform featuring:
 	Run the batch file to start both backend and frontend services:
 
 	```bash
+	cd rivy-storefront-monorepo
 	up.bat
+	```
 	
 
 	To bring everything down:
 
 	```bash
+	cd rivy-storefront-monorepo
 	down.bat
-
-
+	```
+	---
 
 	### For Linux / macOS Users
 	Run the batch file to start both backend and frontend services:
 
 	```bash
-	./up.sh
+	cd rivy-storefront-monorepo
+	up.sh
+	```
+	
 
 	To bring everything down:
 
 	```bash
-	./down.sh
+	cd rivy-storefront-monorepo
+	down.sh
+	```
+	---
 
 
 4. **Start frontend and backend only (with nginx, db):**
@@ -89,11 +98,16 @@ Rivy Storefront is a modern e-commerce platform featuring:
 	cd apps/backend
 	docker compose up --build
 	```
+
+	```bash
+	cd apps/frontend
+	docker compose up --build
+	```
 	
 
 **Access Points:**
-- API: [http://localhost:4000/api](http://localhost:4001/api)
-- OpenAPI Docs: [http://localhost:4001/api/v1/docs](http://localhost:4000/api/v1/docs)
+- API: [http://localhost:4001/api](http://localhost:4001/api)
+- OpenAPI Docs: [http://localhost:4001/api/v1/docs](http://localhost:4001/api/v1/docs)
 - Frontend: [http://localhost:3000](http://localhost:3000)
 
 ---
