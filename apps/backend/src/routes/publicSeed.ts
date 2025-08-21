@@ -1,9 +1,8 @@
 import { Router, Request, Response } from 'express';
-// import { sequelize } from '../models';
+import { sequelize } from '../db/index';
 import { seedDemoData, removeDemoData } from '../utils/demo-data';
 
-
-const { sequelize } = require('../models');
+// const { sequelize } = require('../models');
 
 // const router = Router();
 const router = Router();
